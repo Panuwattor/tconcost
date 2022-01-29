@@ -119,18 +119,31 @@ WEBSITE: https://themefisher.com
                                                         <!-- Login Form -->
                                                         <form method="POST" action="{{ route('login') }}">
                                                             @csrf
-                                                            <input type="text" id="login" class="fadeIn second" name="email" placeholder="Email">
-                                                            <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
-                                                            <input type="submit" style="cursor: grab;" class="fadeIn fourth" value="Log In">
+                                                            <div class="col-auto">
+                                                                <label for="inputPassword2" class="visually-hidden"></label>
+                                                                <input type="text" class="form-control" id="login"name="email"  placeholder="Email">
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <label for="inputPassword2" class="visually-hidden"></label>
+                                                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                            </div>
+                                                            <br>
+                                                         
+                                                                <button type="submit" style="cursor: grab;" class="btn btn-primary mb-3">LOGIN</button>
+
+                                                           
+                                                            
                                                         </form>
+<!-- 
+                                                        <input type="text" id="login" class="fadeIn second" name="email" placeholder="Email">
+                                                        <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
+                                                        <input type="submit" style="cursor: grab;" class="fadeIn fourht" value="Log In">
+                                                        </form> -->
 
                                                     </div>
                                                 </div>
 
 
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
                                     </div>
@@ -217,7 +230,7 @@ WEBSITE: https://themefisher.com
                             <!-- Slide Content Start-->
                             <div class="content style text-center">
                                 <h2 class="text-white" data-animation-in="slideInRight">Smart Hat</h2>
-                                <p class="tag-text mb-4" data-animation-in="slideInRight" data-duration-in="0.6">เป็นบริษัทรับทำโครงหลังคาสำเร็จรูป โดยวิศวะกร เเละสถาปนิก มืออาชีพ <br>ติดต่อ 063-905-4914  </p>
+                                <p class="tag-text mb-4" data-animation-in="slideInRight" data-duration-in="0.6">เป็นบริษัทรับทำโครงหลังคาสำเร็จรูป โดยวิศวะกร เเละสถาปนิก มืออาชีพ <br>ติดต่อ 063-905-4914 </p>
                                 <a href="https://www.facebook.com/smarthatroof/photos/?ref=page_internal" class="btn btn-main btn-white" data-animation-in="slideInRight" data-duration-in="1.2">ติดต่องานโครงหลังคาสำเร็จรูป</a>
                             </div>
                             <!-- Slide Content End-->
@@ -233,7 +246,7 @@ WEBSITE: https://themefisher.com
                             <!-- Slide Content Start -->
                             <div class="content text-center style">
                                 <h2 class="text-white text-bold mb-2" data-animation-in="slideInRight">TAWEECHAI CONCRETE</h2>
-                                <p class="tag-text mb-4" data-animation-in="slideInLeft">บริษัท THAWEECHAI CONCRETE มีรถเทปูนซีเมนต์คุณภาพ มาตรฐานจาก SCG<br> ติดต่อ 097-343-1257  </p>
+                                <p class="tag-text mb-4" data-animation-in="slideInLeft">บริษัท THAWEECHAI CONCRETE มีรถเทปูนซีเมนต์คุณภาพ มาตรฐานจาก SCG<br> ติดต่อ 097-343-1257 </p>
                                 <a href="https://tconhouse.com/contact" class="btn btn-main btn-white" data-animation-in="slideInRight" data-duration-in="1.2">ติดต่องานปูนซีเมนต์ </a>
                             </div>
                             <!-- Slide Content End -->
@@ -243,7 +256,7 @@ WEBSITE: https://themefisher.com
             </div>
         </div>
 
-        
+
 
 
         <!-- jquery -->
