@@ -13,15 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/log', function () {
-    return view('log');
-});
+
 Auth::routes();
 Route::group(['middleware' => 'auth'], function () {
-
-    Route::get('/', function () {
-        return view('welcome');
-    });
 
     Route::get('/sc/search_report', 'PurchaseOrder\PurchaseOrderController@search_report_sc');
     Route::get('/project/address/{project}', 'PurchaseOrder\PurchaseOrderController@sertAdd');
@@ -222,6 +216,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/jb/admin/permission/{permission}/edit', 'PermissionController@edit');
     Route::patch('/jb/admin/permission/{permission}', 'PermissionController@update');
 });
-Route::post('/login', 'Auth\LoginController@login');
-Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+ Route::post('/login', 'Auth\LoginController@login');
+ Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+ 
+
 
