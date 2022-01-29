@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::get('/log', function () {
+    return view('log');
+});
 Auth::routes();
 Route::group(['middleware' => 'auth'], function () {
 
@@ -222,3 +224,4 @@ Route::group(['middleware' => 'auth'], function () {
 });
 Route::post('/login', 'Auth\LoginController@login');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+
