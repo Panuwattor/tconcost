@@ -17,7 +17,7 @@ class CreateProjectInvoicesTable extends Migration
             $table->id();
             $table->integer('project_id');
             $table->date('date');
-            $table->string('code')->unique();
+            $table->string('code');
             $table->string('note')->nullable();
             $table->string('payment_condition');
             $table->integer('credit_amount')->nullable();

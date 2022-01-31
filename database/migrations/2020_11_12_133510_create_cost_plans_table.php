@@ -15,6 +15,8 @@ class CreateCostPlansTable extends Migration
     {
         Schema::create('cost_plans', function (Blueprint $table) {
             $table->id();
+            $table->integer('branch_id');
+            $table->integer('count_cost');
             $table->string('name');
             $table->string('note')->nullable();
             $table->timestamps();

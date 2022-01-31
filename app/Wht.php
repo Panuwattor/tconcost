@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Wht extends Model
 {
-    protected $fillable = ['payment_id','payment_type','project_id','supplier_id','code','date','type','wht_payment_type','note','name','tax_id','address','attribute','attribute_count','user_id', 'status'];
+    protected $fillable = ['payment_id','payment_type','project_id','supplier_id','code','date','type','wht_payment_type','note',
+                            'name','tax_id','address','attribute','attribute_count','user_id', 'status','branch_id'];
 
     function payment(){
         if($this->payment_type == 'MainPayment'){
@@ -29,6 +30,10 @@ class Wht extends Model
         return $this->belongsTo(\App\Customer::class, 'supplier_id');
     }
 
+    function branch(){
+        return $this->belongsTo(\App\Branch::class, 'branch_id');
+    }
+    
     function wht_lists(){
         return $this->hasMany(\App\WhtList::class, 'wht_id');
     }

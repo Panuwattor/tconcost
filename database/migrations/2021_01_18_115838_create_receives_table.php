@@ -17,6 +17,7 @@ class CreateReceivesTable extends Migration
             $table->id();
             $table->string('receive_code');
             $table->integer('project_id');
+            $table->integer('branch_id');
             $table->integer('po_id');
             $table->integer('supplier_id');
             $table->integer('user_id');

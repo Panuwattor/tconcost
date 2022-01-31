@@ -5,13 +5,13 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">รับของ</h1>
+                <h1 class="m-0 text-dark">{{$receive->type == 'PAD' ? 'รายการเบิกงวดงาน' :'รายการรับของ'}}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/receive">รายการรับของ</a></li>
-                    <li class="breadcrumb-item active">รับของ</li>
+                    <li class="breadcrumb-item"><a href="/receive/report/{{$receive->type}}">{{$receive->type == 'PAD' ? 'รายการเบิกงวดงาน' :'รายการรับของ'}}</a></li>
+                    <li class="breadcrumb-item active">{{$receive->receive_code}}</li>
                 </ol>
             </div>
         </div>
@@ -141,17 +141,6 @@
                                         <iframe class="text-right" src="{{ Storage::disk('spaces')->url($pofile->file) }}" height="400px" width="100%"></iframe>
                                         @else
                                         <a target="bank" href="{{ Storage::disk('spaces')->url($pofile->file) }}"><img class="img-fluid pad" src="{{ Storage::disk('spaces')->url($pofile->file) }}" alt="Photo"></a>
-
-                                        <!-- <a target="bank" href="{{ Storage::disk('spaces')->url($pofile->file) }}">
-                                        <div class="info-box m-3 bg-success">
-                                            <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
-
-                                            <div class="info-box-content">
-                                                <span class="info-box-text">Downloads</span>
-                                                <span class="info-box-number">{{ collect(explode('.', $pofile->file)) }}</span>
-                                            </div>
-                                        </div>
-                                        </a> -->
                                         @endif
                                         </div>
                                     @endforeach
@@ -228,12 +217,10 @@
                 <?php
                     $_retention = $receive->retention->price;
                 ?>
-                <div class="card-header">
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                         <label>เงินประกันผลงาน</label>
                         <span>{{number_format($receive->retention->price, 2)}}</span>
                     </div>
-                </div>
                 @endif
                 <div class="form-group">
                     <span>SPECIAL DISCOUNT : <span style="text-decoration: underline gray;">{{number_format($receive->special_discount,2)}}</span></span>

@@ -59,16 +59,6 @@
                                         <input required type="text" class="form-control" id="code" value="{{$code}}" name="code" placeholder="Code">
                                     </div>
                                 </div>
-                                <div class="form-group" hidden>
-                                    <span for="inputEmail3">สาขา <span class="text-danger">*</span></span>
-                                    <div>
-                                        <select required name="branch_id" class="form-control select2" id="">
-                                            @foreach($branchs as $branch)
-                                            <option value="{{$branch->id}}">{{$branch->code}} {{$branch->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="card direct-chat direct-chat-primary collapsed-card">
                                     <div class="card-header ui-sortable-handle" style="cursor: move;">
                                         <div class="form-group">
@@ -195,8 +185,8 @@
                                     <span for="inputEmail3">ผู้รับผิดชอบโครงการ <span class="text-danger">*</span></span>
                                     <div>
                                         <select required name="main_user_id" class="form-control select2" id="">
-                                            @foreach($users as $user)
-                                            <option value="{{$user->id}}" @if($user->id == auth()->user()->id) selected @endif>{{$user->name}}</option>
+                                            @foreach($users as $to_user)
+                                            <option value="{{$to_user->user->id}}" @if($to_user->user->id == auth()->user()->id) selected @endif>{{$to_user->user->name}}</option>
                                             @endforeach
                                         </select>
                                     </div>

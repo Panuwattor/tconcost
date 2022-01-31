@@ -39,8 +39,16 @@ class InvoiceReceiptController extends Controller
         foreach (request('invoices') as $invoice_id) {
             $invoice_ar = ProjectInvoice::find($invoice_id);
             $project = $invoice_ar->project;
-
+            if($invoice_ar->status == 99){
+                alert()->error('ผิดพลาด', 'มี invoice ar ยกเลิกไปแล้ว');
+                return redirect('/project/add-income/new/'.$project->id);
+            }
             array_push($invoice_ars, $invoice_ar);
+        }
+
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
         }
 
         return view('project.receipt.create', compact('invoice_ars', 'project'));
@@ -77,7 +85,7 @@ class InvoiceReceiptController extends Controller
                 $tax = 1;
             }
 
-            $test_code = ReceiptAr::where('code',$code)->exists();
+            $test_code = ReceiptAr::where('code',$code)->where('branch_id', $branch->id)->exists();
             if($test_code){
                 $code = $code.'1';
             }
@@ -136,7 +144,7 @@ class InvoiceReceiptController extends Controller
     {
         $from = request ('from') ? request ('from') : Carbon::today()->format('Y-m-01') ;
         $to = request ('to') ? request ('to') : Carbon::today()->format('Y-m-d') ;
-        $receipt_ars = ReceiptAr::whereBetween('date',[$from , $to])->where('tax', 0)->get();
+        $receipt_ars = ReceiptAr::whereBetween('date',[$from , $to])->where('branch_id', auth()->user()->branch_id)->where('tax', 0)->get();
 
         return view('project.receipt.index', compact('receipt_ars','from','to'));
     }
@@ -145,7 +153,7 @@ class InvoiceReceiptController extends Controller
     {
         $from = request ('from') ? request ('from') : Carbon::today()->format('Y-m-01') ;
         $to = request ('to') ? request ('to') : Carbon::today()->format('Y-m-d') ;
-        $receipt_ars = ReceiptAr::whereBetween('date',[$from , $to])->where('tax', 1)->get();
+        $receipt_ars = ReceiptAr::whereBetween('date',[$from , $to])->where('branch_id', auth()->user()->branch_id)->where('tax', 1)->get();
 
         return view('project.receipt.tax', compact('receipt_ars','from','to'));
     }
@@ -174,6 +182,10 @@ class InvoiceReceiptController extends Controller
 
     public function show(ReceiptAr $receipt_ar)
     {
+        if($receipt_ar->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         $project = $receipt_ar->project;
 
         return view('project.receipt.show', compact('receipt_ar', 'project'));
@@ -181,6 +193,10 @@ class InvoiceReceiptController extends Controller
 
     public function print(ReceiptAr $receipt)
     {
+        if($receipt->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('project.receipt.print', compact('receipt'));
     }
 
@@ -202,14 +218,12 @@ class InvoiceReceiptController extends Controller
             alert()->error('ไม่สำเร็จ', 'สถานะไม่ถูกต้อง');
             return back();
         }
-        if($receipt->tax != 0){
-            $ar_check = ReceiptAr::whereNotIn('tax',[0])->latest('id')->first();
-            if($ar_check->id != $receipt->id){
-                alert()->error('ไม่สำเร็จ', 'ยกเลิกใบกำกับล่าสุดก่อน');
-                return back();
-            }
+
+        if($receipt->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
         }
-        
+
         DB::transaction(function () use ($receipt) {
             $project = $receipt->project;
             if ($project->vat_type == 'ไม่มี') {
@@ -233,13 +247,31 @@ class InvoiceReceiptController extends Controller
             $receipt->receipt_ar_list->first()->project_invoice->status = 0;
             $receipt->receipt_ar_list->first()->project_invoice->update();
 
-            $receipt->delete();
+            if($receipt->tax != 0){
+                $ar_check = ReceiptAr::where('branch_id',auth()->user()->branch_id)->whereNotIn('tax',[0])->latest('id')->first();
+                if($ar_check->id != $receipt->id){
+                    $receipt->update([
+                        'status'=>99,
+                        'note'=>request('note')
+                    ]);
+                }else{
+                    $receipt->delete();
+                }
+            }else{
+                $ar_check = ReceiptAr::where('branch_id',auth()->user()->branch_id)->whereNotIn('tax',[1])->latest('id')->first();
+                if($ar_check->id != $receipt->id){
+                    $receipt->update([
+                        'status'=>99,
+                        'note'=>request('note')
+                    ]);
+                }else{
+                    $receipt->delete();
+                }
+            }
+  
         });
 
-        if($receipt->tax == 0){
-        return redirect('/receipt-ars');
-        }
-        return redirect('/tax-invoices');
+        return redirect('/project/add-income/new/'.$receipt->project_id);
     }
     
 }

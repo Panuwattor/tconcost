@@ -93,8 +93,8 @@
                         <div class="col-sm-8">
                             <select required class="form-control form-control-sm select2" name="main_user_id" id="main_user_id">
                                 <option value="">เลือก</option>
-                                @foreach($main_users as $main_user)
-                                <option value="{{$main_user->id}}">{{$main_user->name}}</option>
+                                @foreach($main_users as $to_branch)
+                                <option value="{{$to_branch->user->id}}">{{$to_branch->user->name}}</option>
                                 @endforeach
                             </select>
                         </div>

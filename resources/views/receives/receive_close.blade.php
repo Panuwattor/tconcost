@@ -10,7 +10,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/receive">รายการรับของ</a></li>
+                    <li class="breadcrumb-item"><a href="/receive/report/{{$type}}">{{$type == 'PAD' ? 'รายการเบิกงวดงาน' :'รายการรับของ'}}</a></li>
                     <li class="breadcrumb-item active">รับของ</li>
                 </ol>
             </div>
@@ -464,7 +464,7 @@
                 }
 
                 history.replaceState({urlPath:'/receive/po/' + '{{$po->id}}' + '/' + this.type},"",'/')
-                location.href = '/receive';
+                location.href = '/receive/select/'+this.type;
             },
             onFileChange(e) {
                 this.file_names.push(e.target.files[0]);

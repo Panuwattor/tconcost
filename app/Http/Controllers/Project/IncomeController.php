@@ -12,6 +12,10 @@ class IncomeController extends Controller
 {
     public function index(Project $project)
     {
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         $as = [];
         $bs = [];
         $ts = [];
@@ -32,11 +36,19 @@ class IncomeController extends Controller
 
     public function create(Project $project)
     {
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('project.income.create', compact('project'));
     }
     
     public function store(Project $project)
     {
+    if($project->branch_id != auth()->user()->branch_id){
+        alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+        return redirect('/project');
+    }
       DB::transaction(function () use($project){
                 foreach(request('type') as $key=>$type){
                     $project->incomes()->create([
@@ -66,6 +78,10 @@ class IncomeController extends Controller
 
     public function edit(Project $project)
     {
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('project.income.edit', compact('project'));
     }
 

@@ -200,7 +200,11 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 10%;">
-                    <img style="width: 90%;" src="https://mytcg.sgp1.digitaloceanspaces.com/{{$branch->logo}}" alt="User profile picture">
+                    @if(auth()->user()->branch->logo)
+                    <img style="width: 90%;" src="{{Storage::disk('spaces')->url(auth()->user()->branch->logo)}}" alt="User profile picture">
+                    @else
+                    <img style="width: 90%;" src="/home.jpg" alt="User profile picture">
+                    @endif
                 </td>
                 <td style="width: 60%;">
                     <span class="subsubject"> <b> {{$branch->company}}</b></span>
@@ -227,7 +231,6 @@
         <table style="width: 100%; margin-top: 5px; border-radius: 10px!important;" class="card-solid1">
             <tr style="background-color: #8AADCC!important;" class="card-solid1">
                 <th style="padding: 5px;"><span class="contents">รหัส/วันที่จ่าย</span></th>
-                <th style="padding: 5px;"><span class="contents">Payment</span></th>
                 <th style="padding: 5px;"><span class="contents">ผู้ถูกหัก ณ ที่จ่าย</span></th>
                 <th style="padding: 5px;"><span class="contents">TAX ID</span></th>
                 <th style="padding: 5px;"><span class="contents">ที่อยู่</span></th>
@@ -252,7 +255,6 @@
                 @foreach($row_group as $i => $row)
                 <tr class="card-solid">
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><span class="contents">{{$row->code}}</span></td>
-                    <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><span class="contents">{{$row->payment ? $row->payment->code : '-'}}</span></td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><span class="contents">{{$row->supplier->name}}</span></td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><span class="contents">{{$row->tax_id}}</span></td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><span class="contents">{{$row->address}}</span></td>
@@ -282,7 +284,7 @@
                 @endforeach
 
                 <tr style="background-color:#ddd">
-                    <th colspan="7" class="text-center"><span class="contents">รวม {{$row->date}}</span></th>
+                    <th colspan="6" class="text-center"><span class="contents">รวม {{$row->date}}</span></th>
                     <th colspan="" class="text-center"><span class="contents">{{number_format($_am, 2)}}</span></th>
                     <th class="text-center"><span class="contents">{{number_format($_tax, 2)}}</span></th>
                 </tr>
@@ -294,7 +296,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="7" class="text-center"><span class="contents">รวมทั้งสิ้น</span></th>
+                    <th colspan="6" class="text-center"><span class="contents">รวมทั้งสิ้น</span></th>
                     <th class="text-center"><span class="contents">{{number_format(($_amount), 2)}}</span></th>
                     <th class="text-center"><span class="contents">{{number_format(($_wht_tax), 2)}}</span></th>
                 </tr>

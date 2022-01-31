@@ -13,12 +13,16 @@ class ConstPlanListController extends Controller
     public function create()
     {
         DB::transaction(function(){
-            $request = request()->all();
-            $list_count = CostPlanList::where('cost_plan_id', request('cost_plan_id'))->count();
-
-            $code = request('cost_plan_id') . sprintf("%'03d", ($list_count + 1));
-            $request['code'] = $code;
-            CostPlanList::create($request);
+            $list_count = CostPlanList::where('cost_plan_id', request('cost_plan_id'))->where('branch_id',auth()->user()->branch_id)->count();
+            $cost_plan = CostPlan::find(request('cost_plan_id'));
+            $code = $cost_plan->count_cost . sprintf("%'03d", ($list_count + 1));
+            CostPlanList::create([
+                'cost_plan_id'=> request('cost_plan_id'),
+                'name'=> request('name'),
+                'note'=> request('note'),
+                'code'=> $code,
+                'branch_id'=>auth()->user()->branch_id
+            ]);
         });
 
         return back();

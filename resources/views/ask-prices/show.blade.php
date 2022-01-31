@@ -29,7 +29,7 @@
                     <span>PR ID : <span style="text-decoration: underline gray;">{{$ap->ap_id}}</span></span>
                 </div>
                 <div class="form-group">
-                    <span>Order : <span style="text-decoration: underline gray;">{{$ap->project->name}}</span></span>
+                    <span>Project : <span style="text-decoration: underline gray;">{{$ap->project->name}}</span></span>
                 </div>
                 <div class="form-group">
                     <span>ผู้ดูแล : <span style="text-decoration: underline gray;">{{$ap->user->name}}</span></span>
@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <span>ไฟล์ :
                         @if($ap->photo)
-                        <a target="bank" href="/storage/{{ $ap->photo }}"><span style="text-decoration: underline #007bff;"> {{ $ap->photo }}</span></a>
+                        <a target="bank" href="{{ Storage::disk('spaces')->url($ap->photo) }}"><span style="text-decoration: underline #007bff;"> {{ $ap->photo }}</span></a>
                         @else
                         <span class="text-primary">ไม่มีไฟล์</span>
                         @endif

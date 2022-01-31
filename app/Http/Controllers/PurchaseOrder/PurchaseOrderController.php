@@ -12,6 +12,7 @@ use App\PurchaseOrder;
 use App\Project;
 use App\PurchaseOrderList;
 use App\User;
+use App\UserToBranch;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -20,45 +21,45 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['PO'])->where('status', 0)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['PO'])->where('status', 0)->get();
         return view('po.index', compact('pos'));
     }
 
     public function index_sc()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['SC'])->where('status', 0)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['SC'])->where('status', 0)->get();
         return view('po.index_sc', compact('pos'));
     }
     
     public function approves()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['PO'])->where('status', 1)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['PO'])->where('status', 1)->get();
         return view('po.index', compact('pos'));
     }
 
     public function approves_sc()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['SC'])->where('status', 1)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['SC'])->where('status', 1)->get();
         return view('po.index_sc', compact('pos'));
     }
     
     public function cancels()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['PO'])->where('status', 2)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['PO'])->where('status', 2)->get();
         return view('po.index', compact('pos'));
     }
 
     public function cancels_sc()
     {
-        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->whereIn('po_type', ['SC'])->where('status', 2)->get();
+        $pos = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')->where('branch_id',auth()->user()->branch_id)->whereIn('po_type', ['SC'])->where('status', 2)->get();
         return view('po.index_sc', compact('pos'));
     }
     
     public function create($type)
     {
-        $projects = Project::where('status', '!=', 0)->get();
-        $main_users = User::all();
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+        $projects = Project::where('status', '!=', 0)->where('branch_id',auth()->user()->branch_id)->get();
+        $main_users = UserToBranch::where('branch_id',auth()->user()->branch_id)->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier' ,'customer'])->where('branch_id',auth()->user()->branch_id)->get();
 
         if($type == 'NR'){
             return view('po.nr_create', compact('projects', 'main_users', 'suppliers', 'type'));
@@ -69,11 +70,14 @@ class PurchaseOrderController extends Controller
 
     public function store()
     {
-        $po = DB::transaction(function () {
+        $po_id = DB::transaction(function () {
 
             if(request('new_customer_id')){
                 $customer_id = request('new_customer_id');
              }else{
+                if(!request('customer_name')){
+                    return 0;
+                 }
                 $customer = Customer::create([
                  'name'=> request('customer_name'),
                  'tel'=> request('customer_tel'),
@@ -82,16 +86,20 @@ class PurchaseOrderController extends Controller
                  'note'=> request('customer_note'),
                  'status'=> request('customer_status'),
                  'txt_tin'=> request('customer_txt_tin'),
-                 'email'=> request('customer_email')
+                 'email'=> request('customer_email'),
+                 'branch_id'=> auth()->user()->branch_id,
                 ]);
                 $customer_id = $customer->id;
              }
 
             $project = Project::find(request('project_id'));
-            $count = PurchaseOrder::where('po_type', request('po_type'))->whereBetween('po_date', [Carbon::createFromFormat('Y-m-d', request('po_date'))->format('Y-m-01') . ' 00:00:00', Carbon::createFromFormat('Y-m-d', request('po_date'))->format('Y-m-t') . ' 23:59:59'])->where('project_id', $project->id)->count();
+            $count = PurchaseOrder::where('po_type', request('po_type'))
+                                    ->whereBetween('po_date', [Carbon::createFromFormat('Y-m-d', request('po_date'))->format('Y-m-01') . ' 00:00:00', Carbon::createFromFormat('Y-m-d', request('po_date'))->format('Y-m-t') . ' 23:59:59'])
+                                    ->where('project_id', $project->id)->count();
             $code = request('po_type') . $project->code . Carbon::createFromFormat('Y-m-d', request('po_date'))->format('ym') . sprintf("%'03d", $count + 1);
             $requests = request()->all();
             $requests['user_id'] = auth()->user()->id;
+            $requests['branch_id'] = auth()->user()->branch_id;
             $requests['po_type'] = request('po_type');
             $requests['code'] = $code;
             $requests['supplier_id'] = $customer_id;
@@ -100,7 +108,7 @@ class PurchaseOrderController extends Controller
 
             if (request('pofile')) {
                 foreach (request('pofile') as $file) {
-                    $file = $file->store('po/'.$po->id, 'public');
+                    $file = Storage::disk('spaces')->putFile('tconcost/branch/'.auth()->user()->branch_id.'/project/'.$project->id, $file, 'public');
                     PoFile::create([
                         'purchase_order_id' => $po->id,
                         'file' => $file,
@@ -108,6 +116,11 @@ class PurchaseOrderController extends Controller
                 }
             }
 
+            if (request('photo')) {
+            } else {
+                $file = Null;
+            }
+    
             foreach (request('name') as $i => $name) {
                  PurchaseOrderList::create([
                     'purchase_order_id' => $po->id,
@@ -128,23 +141,34 @@ class PurchaseOrderController extends Controller
                 'note' => 'สร้าง ' . request('po_type')
             ]);
 
-            return  $po;
+            return  $po->id;
         });
-
+        if($po_id == 0){
+            alert()->error('ผิดพลาด', 'ไม่ได้เพิ่มลูกค้า');
+            return back();
+        }
         if (request('po_type') == 'NR') {
             return redirect('/po/nr');
         } else {
-            return redirect('/po/show/' . $po->id);
+            return redirect('/po/show/' . $po_id);
         }
     }
     
     public function show(PurchaseOrder $po)
     {
+        if($po->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('po.show', compact('po'));
     }
 
     public function print(PurchaseOrder $po)
     {
+        if($po->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('po.print', compact('po'));
     }
 
@@ -203,11 +227,19 @@ class PurchaseOrderController extends Controller
 
     public function allocate_edit(PurchaseOrderList $polist)
     {
+        if($polist->po->status != 0){
+            alert()->error('ผิดพลาด', 'สถานะนี้ไม่สามารถทำรายการได้');
+            return redirect('/po/show/'.$polist->po->id);
+        }
         $projects = Project::where('status', '!=', 0)->get();
         $allocate_list = $polist->allocate->allocate_list;
         foreach ($allocate_list as $i => $list) {
             $allocate_list[$i]['cost_plan_name'] = $list->project_cost_plan_list->cost_plan->name;
             $allocate_list[$i]['costPlanLists'] = $list->project_cost_plan_list->cost_plan_list->name;
+        }
+        if($polist->po->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
         }
         return view('po.allocate_edit', compact('polist', 'projects', 'allocate_list'));
     }
@@ -283,7 +315,7 @@ class PurchaseOrderController extends Controller
                 ->whereIn('po_type', $types)
                 ->whereBetween('po_date', [$from, $to])
                 ->whereIn('status', $status)
-                ->orderBy('po_date', 'DESC')
+                ->orderBy('po_date', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }else if($project_id != 'all' && $date_type == 'create_date'){
             $data = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')
@@ -291,7 +323,7 @@ class PurchaseOrderController extends Controller
             ->whereIn('po_type', $types)
             ->whereIn('status', $status)
             ->whereBetween('created_at', [$from . ' 00:00:00', $to .' 23:59:59'])
-            ->orderBy('created_at', 'DESC')
+            ->orderBy('created_at', 'DESC')->where('branch_id',auth()->user()->branch_id)
             ->get();
 
         }else if($project_id == 'all' && $date_type == 'date' && $types != []) {
@@ -299,13 +331,13 @@ class PurchaseOrderController extends Controller
                 ->whereIn('po_type', $types)
                 ->whereIn('status', $status)
                 ->whereBetween('po_date', [$from, $to])
-                ->orderBy('po_date', 'DESC')
+                ->orderBy('po_date', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }else if($project_id == 'all' && $date_type == 'create_date' && $types != []){
                 $data = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')
                 ->whereBetween('created_at', [$from . ' 00:00:00', $to .' 23:59:59'])
                 ->whereIn('status', $status)
-                ->orderBy('created_at', 'DESC')
+                ->orderBy('created_at', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }
 
@@ -328,7 +360,7 @@ class PurchaseOrderController extends Controller
                 ->whereIn('po_type', $types)
                 ->whereBetween('po_date', [$from, $to])
                 ->whereIn('status', $status)
-                ->orderBy('po_date', 'DESC')
+                ->orderBy('po_date', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }else if($project_id != 'all' && $date_type == 'create_date'){
             $data = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')
@@ -336,7 +368,7 @@ class PurchaseOrderController extends Controller
             ->whereIn('po_type', $types)
             ->whereIn('status', $status)
             ->whereBetween('created_at', [$from . ' 00:00:00', $to .' 23:59:59'])
-            ->orderBy('created_at', 'DESC')
+            ->orderBy('created_at', 'DESC')->where('branch_id',auth()->user()->branch_id)
             ->get();
 
         }else if($project_id == 'all' && $date_type == 'date' && $types != []) {
@@ -344,13 +376,13 @@ class PurchaseOrderController extends Controller
                 ->whereIn('po_type', $types)
                 ->whereIn('status', $status)
                 ->whereBetween('po_date', [$from, $to])
-                ->orderBy('po_date', 'DESC')
+                ->orderBy('po_date', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }else if($project_id == 'all' && $date_type == 'create_date' && $types != []){
                 $data = PurchaseOrder::with('user', 'main_user', 'project', 'supplier')
                 ->whereBetween('created_at', [$from . ' 00:00:00', $to .' 23:59:59'])
                 ->whereIn('status', $status)
-                ->orderBy('created_at', 'DESC')
+                ->orderBy('created_at', 'DESC')->where('branch_id',auth()->user()->branch_id)
                 ->get();
         }
 
@@ -359,9 +391,10 @@ class PurchaseOrderController extends Controller
 
     public function copy(PurchaseOrder $po)
     {
-        $projects = Project::where('status', '!=', 0)->get();
-        $main_users = User::all();
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+
+        $projects = Project::where('status', '!=', 0)->where('branch_id',auth()->user()->branch_id)->get();
+        $main_users = UserToBranch::where('branch_id',auth()->user()->branch_id)->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier','customer'])->where('branch_id',auth()->user()->branch_id)->get();
         $type = $po->po_type;
 
         $files = array();

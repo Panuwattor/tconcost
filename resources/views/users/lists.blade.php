@@ -49,12 +49,6 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-control-label">ภาพ ลายเซ็น</label>
-                          <div class="col-sm-12">
-                            <input type="file" class="form-control" name="signature" multiple>
-                          </div>
-                        </div>
-                        <div class="form-group">
                           <label for="inputPassword3" class="col-control-label">ชื่อ</label>
                           <div class="col-sm-12">
                             <input type="text" placeholder="ชื่อ" class="form-control" name="name" required>
@@ -84,15 +78,6 @@
                             <select class="form-control" name="status">
                               <option value="0">ยกเลิก</option>
                               <option value="1">ใช้งาน</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label>สิทธิ์แลกแต้ม</label>
-                          <div class="col-sm-12">
-                            <select class="form-control" name="exchangePoint">
-                              <option value="0">ไม่มีสิทธิ</option>
-                              <option value="1">มีสิทธิ</option>
                             </select>
                           </div>
                         </div>
@@ -142,13 +127,11 @@
             <thead>
               <tr class="text-center">
                 <th>ภาพ</th>
-                <th>ลายเซ็น</th>
                 <th>ชื่อ</th>
                 <th>เบอร์</th>
                 <th>Email</th>
                 <th>สาขา</th>
                 <th>สถานะ</th>
-                <th>แลกแต้ม</th>
                 <th>Roles</th>
                 <th>Permissions</th>
                 <th>Action</th>
@@ -157,14 +140,18 @@
             </tbody>
             @foreach ($users as $no=>$user)
             <tr class="text-center">
-              <td> @if($user->photo) <img src="/storage/{{$user->photo}} " width="50px" height="50px" class="img-circle elevation-2" alt="User Image">@endif</td>
-              <td> @if($user->signature) <img src="/storage/{{$user->signature}} " width="50px" height="50px" class="img-circle elevation-2" alt="User Image">@endif</td>
+              <td> 
+                @if($user->photo) 
+                <img src="{{ Storage::disk('spaces')->url($user->photo)}}" width="50px" height="50px" class="img-circle elevation-2" alt="User Image">
+                @else
+                <img src="/user.jpg" width="50px" height="50px" class="img-circle elevation-2" alt="User Image">
+                @endif
+              </td>
               <td>{{$user->name}}</td>
               <td>{{$user->phone}}</td>
               <td>{{$user->email}}</td>
               <td>@if($user->branch) {{$user->branch->name}} @endif </td>
               <td>@if($user->status == 0) ยกเลิก @else ใช้งาน @endif</td>
-              <td>@if($user->exchangePoint == 0) ไม่มีสิทธิ @else มีสิทธิ @endif</td>
               <td>
                 @foreach($user->roles as $role)
                 <span class="badge bg-success">{{ $role->name }}</span>
@@ -202,12 +189,6 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-control-label">ภาพ ลายเซ็น</label>
-                    <div class="col-sm-12">
-                      <input type="file" class="form-control" name="signature" multiple>
-                    </div>
-                  </div>
-                  <div class="form-group">
                     <label for="inputPassword3" class="col-control-label">ชื่อ</label>
                     <div class="col-sm-12">
                       <input type="text" placeholder="ชื่อ" class="form-control" value="{{$user->name}}" name="name" required>
@@ -237,15 +218,6 @@
                         <select class="form-control" name="status">
                           <option value="0" @if($user->status == 0) selected @endif>ยกเลิก</option>
                           <option value="1" @if($user->status == 1) selected @endif>ใช้งาน</option>
-                        </select>
-                      </div>
-                  </div>
-                  <div class="form-group">
-                      <label>สิทธิ์แลกแต้ม</label>
-                      <div class="col-sm-12">
-                        <select class="form-control" name="exchangePoint">
-                          <option value="0" @if($user->exchangePoint == 0) selected @endif>ไม่มีสิทธิ</option>
-                          <option value="1" @if($user->exchangePoint == 1) selected @endif>มีสิทธิ</option>
                         </select>
                       </div>
                   </div>

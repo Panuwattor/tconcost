@@ -19,6 +19,7 @@ class CreateWhtsTable extends Migration
             $table->string('payment_type')->nullable();
             $table->integer('project_id')->nullable();
             $table->integer('supplier_id');
+            $table->integer('branch_id');
             $table->string('code');
             $table->date('date');
             $table->string('type');

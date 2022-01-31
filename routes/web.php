@@ -15,12 +15,20 @@ use Illuminate\Support\Facades\Route;
 
 
 Auth::routes();
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth','check_branch']], function () {
 
     Route::get('/', function () {
         return view('welcome');
     });
 
+    Route::get('/retentions', 'Retention\RetentionController@index');
+
+    Route::post('/user/to/branch', 'Branch\UserToBranchController@store');
+    Route::post('/user/to/branch/update/{branch}', 'Branch\UserToBranchController@update');
+    Route::post('/user/to/branch/register', 'Branch\UserToBranchController@register_user');
+    Route::post('/user/to/branch/merge/{branch}', 'Branch\UserToBranchController@merge_user');
+    Route::post('user/to/branch/manage/usertobranch/{usertobranch}', 'Branch\UserToBranchController@manage');
+    
     Route::get('/sc/search_report', 'PurchaseOrder\PurchaseOrderController@search_report_sc');
     Route::get('/project/address/{project}', 'PurchaseOrder\PurchaseOrderController@sertAdd');
     
@@ -86,7 +94,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get/receive/RR/count', 'Receive\ReceiveController@receive_countRR');
     Route::get('/get/receive/RS/count', 'Receive\ReceiveController@receive_countRS');
 
-    Route::get('/receive/report', 'Receive\ReceiveController@report');
+    Route::get('/receive/report/{type}', 'Receive\ReceiveController@report');
     Route::get('/receive-waiting-approve/show/{receive}/print', 'Receive\ReceiveController@print');
 
     Route::get('/wht/edit/{wht}', 'Wht\WhtController@edit');
@@ -186,19 +194,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/cost-plan', 'CostPlans\ConstPlanController@index');
     Route::post('/cost-plan', 'CostPlans\ConstPlanController@store');
     Route::post('/cost-plan/update/{costplan}', 'CostPlans\ConstPlanController@update');
-
+    Route::post('/cost-plan-list-auto', 'CostPlans\ConstPlanController@create_auto');
+    
     Route::post('/cost-plan-list', 'CostPlans\ConstPlanListController@create');
     Route::post('cost-plan-list/update/{costplan_list}', 'CostPlans\ConstPlanListController@update');
     
     Route::get('/customers', 'Customer\CustomerController@index');
     Route::get('/customer/create', 'Customer\CustomerController@create');
+    Route::get('/customer/create/project/{project}', 'Customer\CustomerController@create_project');
     Route::get('/customer/{customer}/show', 'Customer\CustomerController@show');
     Route::post('/customer', 'Customer\CustomerController@store');
     Route::post('/customer/update/{customer}', 'Customer\CustomerController@update');
 
-    Route::get('/branch', 'Brach\BranchController@index');
-    Route::post('/branch/update/{branch}', 'Brach\BranchController@update');
-    Route::post('/branch', 'Brach\BranchController@store');
+    Route::get('/branch', 'Branch\BranchController@index');
+    Route::post('/branch/update/{branch}', 'Branch\BranchController@update');
+    Route::post('/branch', 'Branch\BranchController@store');
 
     Route::get('/jb/admin/users', 'UserController@lists');
     Route::post('/jb/admin/user/{user}', 'UserController@update');
@@ -222,3 +232,5 @@ Route::group(['middleware' => 'auth'], function () {
 });
 Route::post('/login', 'Auth\LoginController@login');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::get('/user/to/branch', 'Branch\UserToBranchController@index')->name('user_to_branch');
+Route::get('/auth/user/checkout/tobranch/{to_branch}', 'Branch\UserToBranchController@checkout');

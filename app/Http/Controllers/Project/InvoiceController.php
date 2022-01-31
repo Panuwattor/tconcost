@@ -15,9 +15,9 @@ class InvoiceController extends Controller
     public function index()
     {
         if(request('status')){
-        $invoices = ProjectInvoice::with('user','project','project.customer')->orderBy('created_at','desc')->get();
+        $invoices = ProjectInvoice::with('user','project','project.customer')->where('branch_id', auth()->user()->branch_id)->orderBy('created_at','desc')->get();
         }else{
-        $invoices = ProjectInvoice::where('status', 0)->get();
+        $invoices = ProjectInvoice::where('status', 0)->where('branch_id', auth()->user()->branch_id)->get();
         }
 
         return view('project.invoice.index', compact('invoices'));
@@ -26,11 +26,20 @@ class InvoiceController extends Controller
     public function show(ProjectInvoice $invoice)
     {
         $project = $invoice->project;
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('project.invoice.show', compact('invoice','project'));
     }
 
     public function print(ProjectInvoice $invoice)
     {
+        $project = $invoice->project;
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('project.invoice.print', compact('invoice'));
     }
 
@@ -41,19 +50,25 @@ class InvoiceController extends Controller
             return back();
         }
         $incomes = Income::whereIn('id', request('incomes'))->where('status', 0)->get();
+        if ($incomes->count() == 0) {
+            alert()->error('ผิดพลาด', 'เลือกรายการก่อน');
+            return back();
+        }
         return view('project.invoice.create', compact('project', 'incomes'));
     }
 
     public function store(Project $project)
     {
 
-        $invoice = DB::transaction(function () use ($project) {
+        $invoice_id = DB::transaction(function () use ($project) {
             $branch = $project->branch;
             $count = ProjectInvoice::whereBetween('date', [Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-01') . ' 00:00:00', Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-t') . ' 23:59:59'])->where('branch_id', $branch->id)->count();
             $code = 'IN' . $branch->code . Carbon::createFromFormat('Y-m-d', request('date'))->format('ym') . sprintf("%'04d", $count + 1);
             $over = Carbon::createFromFormat('Y-m-d H:i:s', request('date') . ' 00:00:00')->addDays(request('cradit') ? request('cradit') : 0)->format('Y-m-d');
             $incomes = Income::whereIn('id', request('incomes'))->where('status', 0)->get();
-
+            if($incomes->count() == 0) {
+                return 0;
+            }
             $invoice = ProjectInvoice::create([
                 'project_id' => $project->id,
                 'branch_id' => $branch->id,
@@ -107,10 +122,14 @@ class InvoiceController extends Controller
                 'note' => 'สร้าง AR'
             ]);
 
-            return $invoice;
+            return $invoice->id;
         });
+        if($invoice_id == 0){
+            alert()->error('ผิดพลาด', 'เลือกรายการก่อน');
+            return redirect('/project/add-income/new/'.$project->id);
+        }
 
-        return redirect('/project/invoice/show/' . $invoice->id);
+        return redirect('/project/invoice/show/' . $invoice_id);
     }
 
     public function cancel(ProjectInvoice $invoice)
@@ -138,7 +157,9 @@ class InvoiceController extends Controller
                 'note' => 'ยกเลิก AR'
             ]);
 
-            $invoice->delete();
+            $invoice->update([
+                'status'=>99
+            ]);
 
             return $project_id;
         });

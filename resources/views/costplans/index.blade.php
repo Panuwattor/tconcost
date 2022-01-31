@@ -22,11 +22,42 @@
         <div class="card-header">
             <h3 class="card-title">กลุ่มต้นทุน</h3>
             <div class="card-tools">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#modal-add">เพิ่มกลุ่มต้นทุน</button>
-                <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modal-addsub">เพิ่มรายการย่อย</button>
+                @if($costplans->count() == 0)
+                <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#modal-cost-plan">เพิ่มกลุ่มต้นทุน (มาตรฐาน)</button>
+                @endif
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#modal-add">เพิ่มกลุ่มต้นทุน (กำหนดเอง)</button>
+                <!-- <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modal-addsub">เพิ่มรายการย่อย (กำหนดเอง)</button> -->
             </div>
-
-            <div class="modal fade" id="modal-addsub">
+            <div class="modal fade" id="modal-cost-plan">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">เพิ่มกลุ่มต้นทุน (มาตรฐาน)</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/cost-plan-list-auto" method="post">
+                            @csrf
+                            <div class="modal-body">
+                                @foreach(config('costplan.cost_plans') as $no=>$cost_plan)
+                                {{$no}} {{$cost_plan}}
+                                    <ul>
+                                        @foreach(config('costplan.cost_plan_lists'.$no) as $key=>$list)
+                                        <li>{{$list}}</li>
+                                        @endforeach
+                                    </ul>
+                                @endforeach
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">เพิ่มกลุ่มต้นทุน (มาตรฐาน)</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="modal fade" id="modal-addsub">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -72,7 +103,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="modal fade" id="modal-add">
                 <div class="modal-dialog">
@@ -105,7 +136,7 @@
                             </div>
                             <div class="modal-footer justify-content-between">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="submit" class="btn btn-primary">เพิ่มกลุ่มต้นทุน (กำหนดเอง)</button>
                             </div>
                         </form>
                     </div>
@@ -324,7 +355,9 @@
 <script>
     $(function() {
         //Initialize Select2 Elements
-        $('.select2').select2({width: '100%'})
+        $('.select2').select2({
+            width: '100%'
+        })
 
         //Initialize Select2 Elements
         $('.select2bs4').select2({

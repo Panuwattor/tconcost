@@ -19,7 +19,19 @@
 </div>
 
 <div class="container-fluid">
+    @if(!$project->customer)
+            <div class="info-box mb-3 bg-warning">
+              <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">ยังไม่สามารถทำรายการได้ </span>
+                <span class="info-box-number">เพิ่มลูกค้าก่อน (<a href="/customer/create/project/{{$project->id}}"> เพิ่มเลย </a>)</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+    @else
     @include('project.heade')
+    @endif
     <div class="row">
         <div class="col-12 col-md-7">
             <div class="card">
@@ -70,18 +82,8 @@
                                                         <input required type="text" class="form-control" id="code" name="code" placeholder="รหัสโครงการ" value="{{$project->code}}">
                                                     </div>
                                                 </div>
-                                                <div class="form-group" hidden>
-                                                    <span for="inputEmail3">สาขา <span class="text-danger">*</span></span>
-                                                    <div>
-                                                        <select required name="branch_id" class="form-control select2" id="">
-                                                            @foreach($branchs as $branch)
-                                                            <option value="{{$branch->id}}" @if($branch->id == $project->branch_id) selected @endif>{{$branch->code}} {{$branch->name}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">ชื่อลูกค้า <span class="text-danger">*</span></span>
+                                                    <span for="inputEmail3">ชื่อลูกค้า <span class="text-danger">*</span><a href="/customer/create">(เพิ่มใหม่)</a></span>
                                                     <div>
                                                         <select required name="customer_id" class="form-control select2" id="">
                                                             @foreach($customers as $customer)
@@ -201,10 +203,10 @@
                                 <span for="inputEmail3">สาขา : <strong style="color:#0E710A;">{{$project->branch->name}}</strong></span>
                             </div> -->
                             <div class="form-group">
-                                <a href="/customer/{{$project->customer->id}}/show" for="inputEmail3">ลูกค้า : <strong style="color:#0E710A;">{{$project->customer->name}}</strong></a>
+                                <a href="/customer/{{$project->customer ? $project->customer->id : ''}}/show" for="inputEmail3">ลูกค้า : <strong style="color:#0E710A;">{{$project->customer ? $project->customer->name : ''}}</strong></a>
                             </div>
                             <div class="form-group">
-                                <span for="inputEmail3">ประเภทโครงการ : <strong style="color:#0E710A;">{{$project->project_type->name}}</strong></span>
+                                <span for="inputEmail3">ประเภทโครงการ : <strong style="color:#0E710A;">{{$project->project_type ? $project->project_type->name : ''}}</strong></span>
                             </div>
                             <div class="form-group">
                                 <span for="inputEmail3">มูลค่าสัญญา (ไม่รวม VAT) : <strong style="color:#0E710A;">{{number_format($project->project_cost, 2)}}</strong></span>
@@ -252,19 +254,19 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <span for="inputEmail3">ชื่อ : <strong style="color:#0E710A;">{{$project->customer->name}}</strong></span>
+                                <span for="inputEmail3">ชื่อ : <strong style="color:#0E710A;">{{$project->customer ?$project->customer->name : ''}}</strong></span>
                             </div>
                             <div class="form-group">
-                                <span for="inputEmail3">ที่อยู่ : <strong style="color:#0E710A;">{{$project->customer->address}}</strong></span>
+                                <span for="inputEmail3">ที่อยู่ : <strong style="color:#0E710A;">{{$project->customer ?$project->customer->address : ''}}</strong></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <span for="inputEmail3">โทรศัพท์ : <strong style="color:#0E710A;">{{$project->customer->tel}}</strong></span>
+                                <span for="inputEmail3">โทรศัพท์ : <strong style="color:#0E710A;">{{$project->customer ?$project->customer->tel : ''}}</strong></span>
                             </div>
 
                             <div class="form-group">
-                                <span for="inputEmail3">note : <strong style="color:#0E710A;">{{$project->customer->note}}</strong></span>
+                                <span for="inputEmail3">note : <strong style="color:#0E710A;">{{$project->customer ?$project->customer->note : ''}}</strong></span>
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/project/add-income/new/{{$invoice->project_id}}">แผนรายรับ โครงการ</a></li>
                     <li class="breadcrumb-item active">ใบแจ้งหนี้ Invoice</li>
                 </ol>
             </div>
@@ -28,12 +29,15 @@
                             <i class="fa fa-file-pdf-o mr-1"></i>
                             ใบแจ้งหนี้ Invoice
                         </h3>
+
                         <div class="card-tools">
-                            <a href="/project/invoice/print/{{$invoice->id}}" target="back_"><button type="button" class="btn btn-outline-secondary"><i class="fa fa-print"></i> พิมพ์</button> </a>
                             @if($invoice->status == 0)
-                            <a href="/invoice/cancel/{{$invoice->id}}"><button type="button" class="btn btn-outline-danger"><i class="fa fa-times-circle-o"></i> ยกเลิก</button> </a>
+                            <a href="/project/invoice/print/{{$invoice->id}}" target="back_"><button type="button" class="btn btn-outline-secondary"><i class="fa fa-print"></i> พิมพ์</button> </a>
                             @endif
                         </div>
+                        @if($invoice->status == 99)
+                          <h1 class="text-center text-danger">ยกเลิกแล้ว</h1> 
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -116,7 +120,7 @@
                         </div>
 
                         <div class="row mt-3" id="app">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">ชำระเงิน 
                                         <label class="col-form-label text-success">{{$invoice->payment_condition}}
@@ -126,6 +130,11 @@
                                         </label>
                                     </label>
                                 </div>
+                            </div>
+                            <div class="col-12 col-md-6 text-right">
+                                @if($invoice->status == 0)
+                                <a href="/invoice/cancel/{{$invoice->id}}" onclick="return confirm('คุณแน่ใจที่จะยกเลิกรายการหรือไม่ ?')"><button type="button" class="btn btn-outline-danger"><i class="fa fa-times-circle-o"></i> ยกเลิก</button> </a>
+                                @endif
                             </div>
                         </div>
                     </div>

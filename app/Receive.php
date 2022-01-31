@@ -8,7 +8,8 @@ class Receive extends Model
 {
     //ใช้สำหรับประเภท RS other_receive_status 1 คือสร้าง other receive เเล้ว ถ้า 0 ยังไม่ได้สร้าง
 
-    protected $fillable = ['project_id', 'po_id', 'supplier_id', 'user_id', 'date', 'type', 'po_remain', 'po_remain_percent', 'note', 'status', 'receive_code', 'duedate_id', 'payment_condition', 'sum_price', 'vat_amount', 'sum', 'user_approve_id', 'reject_note', 'approveDate', 'special_discount', 'other_receive_status'];
+    protected $fillable = ['project_id', 'po_id', 'supplier_id', 'user_id', 'date', 'type', 'po_remain', 'po_remain_percent', 'note', 'status', 'receive_code', 'duedate_id', 'payment_condition',
+                             'sum_price', 'vat_amount', 'sum', 'user_approve_id', 'reject_note', 'approveDate', 'special_discount', 'other_receive_status','branch_id'];
     protected $dates = ['approveDate'];
 
     function receive_lists()
@@ -24,6 +25,11 @@ class Receive extends Model
     function project()
     {
         return $this->belongsTo(\App\Project::class, 'project_id');
+    }
+
+    function branch()
+    {
+        return $this->belongsTo(\App\Branch::class, 'branch_id');
     }
 
     function po()

@@ -26,72 +26,91 @@
                     <h3 class="card-title">รายการลูกค้า</h3>
                 </div>
                 <div class="card-body">
-                <form action="/customer" method="post">
-                                    @csrf
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-12 col-md-6">
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">ชื่อ</span>
-                                                    <div>
-                                                        <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">โทร</span>
-                                                    <div>
-                                                        <input required type="text" class="form-control" id="inputEmail3" name="tel" placeholder="โทรศัพท์">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">โทรสาร</span>
-                                                    <div>
-                                                        <input type="text" class="form-control" id="inputEmail3" name="fax" placeholder="โทรสาร">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">อีเมลล์</span>
-                                                    <div>
-                                                        <input type="text" class="form-control" id="inputEmail3" name="email" placeholder="อีเมลล์">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">เลขประจำตัวผู้เสียภาษี</span>
-                                                    <div>
-                                                        <input type="text" class="form-control" id="inputEmail3" name="txt_tin" placeholder="เลขประจำตัวผู้เสียภาษี">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-6">
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">สถานะ</span>
-                                                    <div>
-                                                        <select class="form-control" name="status" id="status">
-                                                            <option value="customer">customer</option>
-                                                            <option value="supplier">supplier</option>
-                                                            <option value="customer , supplier">customer , supplier</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">ที่อยู่</span>
-                                                    <div>
-                                                        <textarea required class="form-control" rows="3" name="address" placeholder="Enter ..."></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <span for="inputEmail3">note</span>
-                                                    <div>
-                                                        <textarea class="form-control" rows="3" name="note" placeholder="Enter ..."></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    <form action="/customer" method="post">
+                        @csrf
+                        <input type="hidden" name="project_id" value="{{$project ?$project->id:''}}" id="">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <span for="inputEmail3">ชื่อ</span>
+                                        <div>
+                                            <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ">
                                         </div>
                                     </div>
-                                    <div class="modal-footer justify-content-between">
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">โทร</span>
+                                        <div>
+                                            <input required type="text" class="form-control" id="inputEmail3" name="tel" placeholder="โทรศัพท์">
+                                        </div>
                                     </div>
-                                </form>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">โทรสาร</span>
+                                        <div>
+                                            <input type="text" class="form-control" id="inputEmail3" name="fax" placeholder="โทรสาร">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">อีเมลล์</span>
+                                        <div>
+                                            <input type="text" class="form-control" id="inputEmail3" name="email" placeholder="อีเมลล์">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">เลขประจำตัวผู้เสียภาษี</span>
+                                        <div>
+                                            <input type="text" class="form-control" id="inputEmail3" name="txt_tin" placeholder="เลขประจำตัวผู้เสียภาษี">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <span for="inputEmail3">สถานะ</span>
+                                        <div>
+                                            <select class="form-control" name="status" id="status">
+                                                <option value="customer">customer</option>
+                                                <option value="supplier">supplier</option>
+                                                <option value="customer , supplier">customer , supplier</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">ที่อยู่</span>
+                                        <div>
+                                            <textarea required class="form-control" rows="3" name="address" placeholder="Enter ..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <span for="inputEmail3">note</span>
+                                        <div>
+                                            <textarea class="form-control" rows="3" name="note" placeholder="Enter ..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    @if($project)
+                                    <input type="hidden" name="to_branchs[]" value="{{auth()->user()->branch_id}}" > 
+                                    @else
+                                    <h6>บริษัทที่เพิ่มรายการเข้า</h6>
+                                    <div class="row">
+                                        @foreach(auth()->user()->to_branchs as $to_branch)
+                                        <div class="col-md-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="to_branchs[]" value="{{$to_branch->branch_id}} " {{auth()->user()->branch_id == $to_branch->branch_id ? 'checked' : ''}} > {{$to_branch->branch->code}} <small>{{$to_branch->branch->name}}</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer ">
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

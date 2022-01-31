@@ -335,7 +335,11 @@ class AllocateController extends Controller
             $po_lists[$i]['sum_price'] = 0;
         }
         $po_lists = json_encode($po_lists);
-        $projects = Project::where('status', '!=', 0)->get();
+        $projects = Project::where('status', '!=', 0)->where('branch_id',auth()->user()->branch_id)->get();
+        if($po->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('po.new_allocate', compact('po_lists', 'projects', 'po'));
     }
 }

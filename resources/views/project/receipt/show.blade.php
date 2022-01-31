@@ -10,6 +10,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/project/add-income/new/{{$project->id}}">แผนรายรับ โครงการ</a></li>
                     <li class="breadcrumb-item active">Receipt AR</li>
                 </ol>
             </div>
@@ -23,12 +24,19 @@
             <div class="card card-default">
                 <div class="card-header ui-sortable-handle">
                     <h3 class="card-title">
-                        <i class="fa fa-file-text-o mr-1"></i>
+                        <i class="fa fa-file-text-o"></i>
                         Receipt AR
                     </h3>
+
+                    @if($receipt_ar->status == 1)
                     <div class="card-tools">
-                        <a href="/receipt-ar/show/{{$receipt_ar->id}}/print" target="back_"><button type="button" class="btn btn-outline-secondary pull-right" ><i class="fa fa-print"></i> พิมพ์</button> </a>
+                        <a href="/receipt-ar/show/{{$receipt_ar->id}}/print" target="back_"><button type="button" class="btn btn-outline-secondary pull-right"><i class="fa fa-print"></i> พิมพ์</button> </a>
                     </div>
+                    @endif
+                    @if($receipt_ar->status == 99)
+                        <h1 class="text-center text-danger">ยกเลิกแล้ว </h1> 
+                    @endif
+                    
                 </div>
                 <div class="card-body">
                     <form action="/receipt-ar/store" method="post">
@@ -92,10 +100,34 @@
 
             </div>
             @if($receipt_ar->status == 1)
-            <form action="/receipt-ar/cancel/{{$receipt_ar->id}}" method="post" >
-                @csrf
-                <button type="submit" class="btn btn-outline-danger  pull-right"><i class="fa fa-times-circle-o"></i> ยกเลิก</button>
-            </form>
+            <button type="submit" class="btn btn-outline-danger  pull-right" data-toggle="modal" data-target="#modal-cancel"><i class="fa fa-times-circle-o"></i> ยกเลิก</button>
+            <div class="modal fade" id="modal-cancel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header  bg-danger">
+                            <h4 class="modal-title"><i class="fa fa-file-text-o mr-1"></i> ยกเลิกรายการ Receipt AR</h4>
+                        </div>
+                        <form action="/receipt-ar/cancel/{{$receipt_ar->id}}" onsubmit="return confirm('คุณแน่ใจที่จะยกเลิกรายการหรือไม่ ?')" method="post">
+                            @csrf
+                            <div class="modal-body">
+                                <code>ถ้าเป็นรายการล่าสุดจะถูกลบ ถ้าไม่เป็น จะถูกยกเลิก</code>
+                                <div class="form-group">
+                                    <label>หมายเหตุการยกเลิก</label>
+                                    <textarea class="form-control" name="note" rows="3" placeholder="ต้องกรอก ..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-outline-danger  pull-right"><i class="fa fa-times-circle-o"></i> ยกเลิก</button>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
             @endif
         </div>
     </div>
@@ -136,7 +168,9 @@
 <script>
     $(function() {
         //Initialize Select2 Elements
-        $('.select2').select2({width: '100%'})
+        $('.select2').select2({
+            width: '100%'
+        })
 
         //Initialize Select2 Elements
         $('.select2bs4').select2({

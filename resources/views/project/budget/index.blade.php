@@ -10,6 +10,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/project/show/{{$project->id}}">โครงการ</a></li>
           <li class="breadcrumb-item active">แผนต้นทุนโครงการ</li>
         </ol>
       </div>
@@ -104,27 +105,16 @@
         @foreach($costplans as $i => $costplan)
         <div class="col-md-12">
           <div class="card collapsed-card">
-            <div class="card-header">
-              <h5 class="card-title">
-                @if($i == 0 )
-                <i class="fa fa-cart-plus fa-2x text-success"></i>
-                @elseif($i == 1)
-                <i class="fa fa-child fa-2x text-info"></i>
-                @elseif($i == 2)
-                <i class="fa fa-wrench fa-2x text-primary"></i>
-                @elseif($i == 3)
-                <i class="fa fa-drupal fa-2x text-warning"></i>
-                @else
-                <i class="fa fa-shopping-bag fa-2x text-danger"></i>
-                @endif
-                {{$i + 1}} . {{$costplan->name}} <small>@if($costplan->note)({{$costplan->note}})@endif</small></h5>
-
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-plus"></i>
-                </button>
+            <a href="#" class="btn btn-tool" data-card-widget="collapse">
+              <div class="card-header m-2">
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <h5 class="text-gray-dark"> <i class="fa fa-cogs"></i> {{$i + 1}} . {{$costplan->name}} <small>@if($costplan->note)({{$costplan->note}})@endif</small></h5>
               </div>
-            </div>
+            </a>
             <!-- /.card-header -->
             <div class="card-body" style="display: none;">
               <div class="card-body p-0">
@@ -212,22 +202,16 @@
     var salesChart = new Chart($salesChart, {
       type: 'bar',
       data: {
-        labels: [
-          '{{$as[0]}}', '{{$as[1]}}', '{{$as[2]}}', '{{$as[3]}}', '{{$as[4]}}'
-        ],
+        labels: {!!$as!!},
         datasets: [{
             backgroundColor: '#007bff',
             borderColor: '#007bff',
-            data: [
-              '{{$bs[0]}}', '{{$bs[1]}}', '{{$bs[2]}}', '{{$bs[3]}}', '{{$bs[4]}}'
-            ]
+            data: {!!$bs!!}
           },
           {
             backgroundColor: '#EC4040',
             borderColor: '#EC4040',
-            data: [
-              '{{$cs[0]}}', '{{$cs[1]}}', '{{$cs[2]}}', '{{$cs[3]}}', '{{$cs[4]}}'
-            ]
+            data: {!!$cs!!}
           }
         ]
       },
@@ -268,9 +252,7 @@
           }],
           xAxes: [{
             display: true,
-            gridLines: {
-              display: false
-            },
+            gridLines: {display: false},
             ticks: ticksStyle
           }]
         }

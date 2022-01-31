@@ -36,56 +36,59 @@ class ReceiveController extends Controller
         return view('receives.index', compact('receives', 'pos_po', 'pos_ps', 'pos_sc'));
     }
 
-    public function report()
+    public function report($type)
     {
 
         $from = request('from') ? request('from') : Carbon::today()->format('Y-m-d');
         $to = request('to') ? request('to') : Carbon::today()->format('Y-m-d');
         $date_type = request('date_type') ? request('date_type') : 'date';
-        $types = ['RR'];
         $status = request('status') ? request('status') : [0,1,2];
         $project_id = request('project_id') ? request('project_id') : 'all';
-        $projects = Project::get();
-        $pos_po = PurchaseOrder::where('status', 1)->where('po_type', 'PO')->get();
+        $projects = Project::where('branch_id',auth()->user()->branch_id)->get();
+        $pos_po = PurchaseOrder::where('status', 1)->where('branch_id',auth()->user()->branch_id)->where('po_type', 'PO')->get();
+        $pos_sc = PurchaseOrder::where('status', 1)->where('branch_id',auth()->user()->branch_id)->where('po_type', 'SC')->get();
 
         if ($project_id != 'all' && $date_type == 'date') {
             $data = Receive::where('project_id', $project_id)
-                ->whereIn('type', $types)
+                ->where('type', $type)
                 ->whereIn('status', $status)
+                ->where('branch_id',auth()->user()->branch_id)
                 ->whereBetween('date', [$from . ' 00:00:00', $to . ' 23:59:59'])->orderBy('date', 'DESC')->get();
         } else if ($project_id != 'all' && $date_type == 'create_date') {
             $data = Receive::where('project_id', $project_id)
                 ->whereIn('status', $status)
-                ->whereIn('type', $types)
+                ->where('branch_id',auth()->user()->branch_id)
+                ->where('type', $type)
                 ->whereBetween('created_at', [$from . ' 00:00:00', $to . ' 23:59:59'])->orderBy('created_at', 'DESC')->get();
-        } else if ($project_id == 'all' && $types != '') {
-            $data = Receive::whereIn('type', $types)
+        } else if ($project_id == 'all' && $type != '') {
+            $data = Receive::where('type', $type)
                 ->whereIn('status', $status)
+                ->where('branch_id',auth()->user()->branch_id)
                 ->whereBetween('date', [$from . ' 00:00:00', $to . ' 23:59:59'])->orderBy('date', 'DESC')->get();
-        } else if ($project_id == 'all' && $types == '') {
-            $data = Receive::where('status', '!=', 15)->whereIn('status', $status)->whereBetween('date', [$from . ' 00:00:00', $to . ' 23:59:59'])->orderBy('date', 'DESC')->get();
+        } else if ($project_id == 'all' && $type == '') {
+            $data = Receive::where('status', '!=', 15)->whereIn('status', $status)->where('branch_id',auth()->user()->branch_id)->whereBetween('date', [$from . ' 00:00:00', $to . ' 23:59:59'])->orderBy('date', 'DESC')->get();
         }
 
-        return view('receives.receive_report', compact('data', 'types', 'from', 'to', 'projects', 'date_type', 'project_id','status','pos_po'));
+        return view('receives.receive_report', compact('data', 'from', 'to', 'projects', 'date_type', 'project_id','status','pos_po','pos_sc','type'));
     }
 
     public function waiting_approvePAD()
     {
-        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('type','PAD')->orderBy('type')->where('status', 0)->get();
+        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('branch_id',auth()->user()->branch_id)->where('type','PAD')->orderBy('type')->where('status', 0)->get();
 
         return view('receives.waiting_approve', compact('receives'));
     }
 
     public function waiting_approveRR()
     {
-        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('type','RR')->orderBy('type')->where('status', 0)->get();
+        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('branch_id',auth()->user()->branch_id)->where('type','RR')->orderBy('type')->where('status', 0)->get();
 
         return view('receives.waiting_approve', compact('receives'));
     }
 
     public function waiting_approveRS()
     {
-        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('type','RS')->orderBy('type')->where('status', 0)->get();
+        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('branch_id',auth()->user()->branch_id)->where('type','RS')->orderBy('type')->where('status', 0)->get();
 
         return view('receives.waiting_approve', compact('receives'));
     }
@@ -93,14 +96,14 @@ class ReceiveController extends Controller
 
     public function all_approve()
     {
-        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('status', 2)->get();
+        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('branch_id',auth()->user()->branch_id)->where('status', 2)->get();
 
         return view('receives.receive_approve', compact('receives'));
     }
 
     public function all_reject()
     {
-        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('status', 3)->get();
+        $receives = Receive::with('po', 'project', 'supplier', 'user', 'receive_lists')->where('branch_id',auth()->user()->branch_id)->where('status', 3)->get();
 
         return view('receives.receive_reject', compact('receives'));
     }
@@ -127,15 +130,12 @@ class ReceiveController extends Controller
         $type = '';
         if ($receive == 'RR') {
             $type = 'PO';
-        } else if ($receive == 'RS') {
-            $type = 'PS';
-        } else {
+        } else if ($receive == 'PAD') {
             $type = 'SC';
-        }
+        } 
+        $pos = PurchaseOrder::with('purchaseOrderLists', 'user', 'project')->where('status', 1)->where('po_type', $type)->where('branch_id', auth()->user()->branch_id)->get();
 
-        $pos = PurchaseOrder::with('purchaseOrderLists', 'user', 'project')->where('status', 1)->where('po_type', $type)->get();
-
-        return view('receives.selected', compact('pos', 'receive'));
+        return view('receives.selected', compact('pos', 'receive','type'));
     }
 
     public function po_show(PurchaseOrder $po)
@@ -145,8 +145,12 @@ class ReceiveController extends Controller
 
     public function receive(PurchaseOrder $po, $type)
     {
+        if($po->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         $count = Receive::where('type', $type)->whereBetween('created_at', [Carbon::today()->format('Y-m-01') . ' 00:00:00', Carbon::today()->format('Y-m-t') . ' 23:59:59'])->count();
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier' ,'customer'])->where('branch_id',auth()->user()->branch_id)->get();
 
         $po_lists = $po->purchaseOrderLists;
         foreach($po_lists as $i => $po_list){
@@ -160,7 +164,7 @@ class ReceiveController extends Controller
     {
 
         $count = Receive::where('type', $type)->whereBetween('created_at', [Carbon::today()->format('Y-m-01') . ' 00:00:00', Carbon::today()->format('Y-m-t') . ' 23:59:59'])->count();
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier' ,'customer'])->get();
 
         return view('receives.receive_close', compact('po', 'suppliers', 'type'));
     }
@@ -180,7 +184,8 @@ class ReceiveController extends Controller
             $_receive['sum'] = request('price')['sum'];
             $_receive['receive_code'] = $receive_code;
             $_receive['special_discount'] = request('price')['special_discount'];
-
+            $_receive['branch_id'] = auth()->user()->branch_id;
+            
             foreach (request('po_list') as $po_list) {
                 $list = PurchaseOrderList::find($po_list['id']);
                 if ($po_list['amount'] <= 0) {
@@ -250,6 +255,8 @@ class ReceiveController extends Controller
                     'project_id' => $receive->project_id,
                     'price' => request('retention'),
                     'user_id' => auth()->user()->id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'customer_id' => $project->customer_id,
                 ]);
             }
 
@@ -306,6 +313,7 @@ class ReceiveController extends Controller
             $_receive['receive_code'] = $receive_code;
             $_receive['special_discount'] = request('price')['special_discount'];
             $_receive['status'] = 15;
+            $_receive['branch_id'] = auth()->user()->branch_id;
 
             foreach (request('po_list') as $po_list) {
                 $list = PurchaseOrderList::find($po_list['id']);
@@ -401,6 +409,8 @@ class ReceiveController extends Controller
                     'project_id' => $receive->project_id,
                     'price' => request('retention'),
                     'user_id' => auth()->user()->id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'customer_id' => $project->customer_id,
                 ]);
             }
 
@@ -442,6 +452,10 @@ class ReceiveController extends Controller
 
     public function receive_show(Receive $receive)
     {
+        if($receive->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        } 
         return view('receives.receive_new_show', compact('receive'));
     }
 
@@ -492,7 +506,6 @@ class ReceiveController extends Controller
     public function waiting_approve_store()
     {
         $receive = Receive::find(request('receive_id'));
-
         if ($receive->status != 0) {
             alert()->error('ไม่สำเร็จ', 'ไม่ใช่สถานะรออนุมัติ');
             
@@ -516,7 +529,7 @@ class ReceiveController extends Controller
         });
 
         alert()->success('สำเร็จ', 'อนุมัติเรียบร้อย');
-        return redirect('/receive/approve');
+        return redirect('/receive/report/'.$receive->type);
     }
 
     public function receive_reject()
@@ -557,11 +570,15 @@ class ReceiveController extends Controller
         });
 
         alert()->success('สำเร็จ', 'ไม่อนุมัติเรียบร้อย');
-        return redirect('/receive/reject');
+        return back();
     }
 
     public function print(Receive $receive)
     {
+        if($receive->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         if ($receive->type == 'PAD') {
             return view('receives.print_pad', compact('receive'));
         } else {
@@ -573,7 +590,7 @@ class ReceiveController extends Controller
     {
         $po = $receive->po;
         $type = $receive->type;
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier' ,'customer'])->get();
 
         $po_lists = $po->purchaseOrderLists;
         foreach($po_lists as $i => $po_list){
@@ -587,7 +604,7 @@ class ReceiveController extends Controller
     {
         $po = $receive->po;
         $type = $receive->type;
-        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier'])->get();
+        $suppliers = Customer::whereIn('status', ['supplier','customer , supplier' ,'customer'])->get();
 
         return view('receives.receive_approve_edit', compact('po', 'suppliers', 'type', 'receive'));
     }
@@ -653,6 +670,7 @@ class ReceiveController extends Controller
             $_receive['sum'] = request('price')['sum'];
             $_receive['receive_code'] = $old_receive->receive_code;
             $_receive['special_discount'] = request('price')['special_discount'];
+            $_receive['branch_id'] = auth()->user()->branch_id;
             $receive = Receive::create($_receive);
 
             foreach (request('po_list') as $po_list) {
@@ -712,6 +730,8 @@ class ReceiveController extends Controller
                     'project_id' => $receive->project_id,
                     'price' => request('retention'),
                     'user_id' => auth()->user()->id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'customer_id' => $project->customer_id,
                 ]);
             }
 
@@ -820,6 +840,7 @@ class ReceiveController extends Controller
             $_receive['receive_code'] = $old_receive->receive_code;
             $_receive['special_discount'] = request('price')['special_discount'];
             $_receive['note'] = $old_receive->note;
+            $_receive['branch_id'] = auth()->user()->branch_id;
             $receive = Receive::create($_receive);
 
             foreach (request('po_list') as $po_list) {
@@ -879,6 +900,8 @@ class ReceiveController extends Controller
                     'project_id' => $receive->project_id,
                     'price' => request('retention'),
                     'user_id' => auth()->user()->id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'customer_id' => $project->customer_id,
                 ]);
             }
 

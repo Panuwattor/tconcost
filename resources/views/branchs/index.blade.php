@@ -5,12 +5,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">สาขา</h1>
+                <h1 class="m-0 text-dark">บริษัท</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active">สาขา</li>
+                    <li class="breadcrumb-item active">บริษัท</li>
                 </ol>
             </div>
         </div>
@@ -22,15 +22,15 @@
         <div class="col-md-12 col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">รายการสาขา</h3>
+                    <h3 class="card-title">รายการบริษัท</h3>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-block btn-outline-success btn-sm" data-toggle="modal" data-target="#modal-add">เพิ่มสาขา</button>
+                        <button type="button" class="btn btn-block btn-outline-success btn-sm" data-toggle="modal" data-target="#modal-add">เพิ่มบริษัท</button>
                     </div>
                     <div class="modal fade" id="modal-add">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4 class="modal-title">เพิ่มสาขา</h4>
+                                    <h4 class="modal-title">เพิ่มบริษัท</h4>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -41,15 +41,15 @@
                                         <div class="row">
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">สาขา</span>
+                                                    <span for="inputEmail3">บริษัท</span>
                                                     <div>
-                                                        <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ สาขา">
+                                                        <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ บริษัท">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">code สาขา</span>
+                                                    <span for="inputEmail3">code บริษัท</span>
                                                     <div>
-                                                        <input required type="text" class="form-control" id="code" name="code" placeholder="รหัสสาขา">
+                                                        <input required type="text" class="form-control" id="code" name="code" placeholder="รหัสบริษัท">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -83,9 +83,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">รหัส สาขา ประจำตัวผู้เสียภาษี</span>
+                                                    <span for="inputEmail3">รหัส บริษัท ประจำตัวผู้เสียภาษี</span>
                                                     <div>
-                                                        <input type="text" class="form-control" id="tax_code" name="tax_code" placeholder="รหัส สาขา เลขประจำตัวผู้เสียภาษี">
+                                                        <input type="text" class="form-control" id="tax_code" name="tax_code" placeholder="รหัส บริษัท เลขประจำตัวผู้เสียภาษี">
                                                     </div>
                                                 </div>
 
@@ -101,8 +101,8 @@
                                                     <span for="inputEmail3">สถานะ</span>
                                                     <div>
                                                         <select class="form-control" name="status">
-                                                            <option value="0">ยกเลิก</option>
                                                             <option value="1">ใช้งาน</option>
+                                                            <option value="0">ยกเลิก</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -144,15 +144,14 @@
                             <tbody>
                                 @foreach($branchs as $branch)
                                 <tr class="text-center">
-                                    <td> @if($branch->logo) <img src="/storage/{{ $branch->logo }}" width="50px" height="50px" class="img-circle elevation-2" alt="User Image">@endif</td>
+                                    <td> @if($branch->logo) <img src="{{ Storage::disk('spaces')->url($branch->logo) }}" width="50px" height="50px" class="img-circle elevation-2" alt="User Image">@endif</td>
                                     <td>{{$branch->code}} {{$branch->name}}</td>
                                     <td>{{$branch->company}} </br> <small> {{$branch->company_eng}} </small> </td>
-
                                     <td>{{$branch->tel}}</td>
                                     <td>{{$branch->address}}</td>
                                     <td>{{$branch->tax}} </br> <small>( {{$branch->tax_code}} )</small></td>
                                     <td>{{$branch->note}}</td>
-                                    <td>{{$branch->status}}</td>
+                                    <td>{{$branch->status == 1 ? 'ใช้งาน' : 'ยกเลิก'}}</td>
                                     <td>
                                         <button type="button" class="btn btn-block btn-outline-warning btn-sm" data-toggle="modal" data-target="#modal-edit{{$branch->id}}">แก้ไข</button>
                                     </td>
@@ -166,7 +165,7 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4 class="modal-title">เพิ่มสาขา</h4>
+                                    <h4 class="modal-title">เพิ่มบริษัท</h4>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -177,15 +176,15 @@
                                         <div class="row">
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">สาขา</span>
+                                                    <span for="inputEmail3">บริษัท</span>
                                                     <div>
-                                                        <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ สาขา" value="{{$branch->name}}">
+                                                        <input required type="text" class="form-control" id="inputEmail3" name="name" placeholder="ชื่อ บริษัท" value="{{$branch->name}}">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">code สาขา</span>
+                                                    <span for="inputEmail3">code บริษัท</span>
                                                     <div>
-                                                        <input required type="text" class="form-control" id="code" name="code" placeholder="รหัสสาขา" value="{{$branch->code}}">
+                                                        <input required type="text" class="form-control" id="code" name="code" placeholder="รหัสบริษัท" value="{{$branch->code}}">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -219,9 +218,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span for="inputEmail3">รหัส สาขา ประจำตัวผู้เสียภาษี</span>
+                                                    <span for="inputEmail3">รหัส บริษัท ประจำตัวผู้เสียภาษี</span>
                                                     <div>
-                                                        <input type="text" class="form-control" id="tax_code" name="tax_code" placeholder="รหัส สาขา เลขประจำตัวผู้เสียภาษี" value="{{$branch->tax_code}}">
+                                                        <input type="text" class="form-control" id="tax_code" name="tax_code" placeholder="รหัส บริษัท เลขประจำตัวผู้เสียภาษี" value="{{$branch->tax_code}}">
                                                     </div>
                                                 </div>
 

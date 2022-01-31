@@ -22,6 +22,7 @@ class CreateCustomersTable extends Migration
             $table->string('note')->nullable();
             $table->string('email')->nullable();
             $table->string('txt_tin')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->string('status');
             $table->timestamps();
         });

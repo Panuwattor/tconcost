@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class AskPrice extends Model
 {
-    protected $fillable = ['ap_id','project_id','main_user_id','tel','delivery','ap_date','finish_date','address','photo','note','user_id','status'];
+    protected $fillable = ['ap_id','project_id','branch_id','main_user_id','tel','delivery','ap_date','finish_date','address','photo','note','user_id','status'];
 
     function user()
     {
         return $this->belongsTo('App\User', 'user_id');
+    }
+
+    function branch()
+    {
+        return $this->belongsTo('App\Branch', 'branch_id');
     }
     
     function main_user()

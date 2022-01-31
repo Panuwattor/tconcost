@@ -32,7 +32,12 @@
     <div class="container">
         <div class="row">
             <div class="col-6 text-center">
-                <img src="{{asset('/logo.jpg')}}" style="width: 130px;">
+                @if($ap->branch->logo)
+                    <img src="{{Storage::disk('spaces')->url($ap->branch->logo)}}" style="width: 130px;">
+
+                    @else
+                    <img src="{{asset('/home.jpg')}}" style="width: 130px;">
+                    @endif
                 <br>
                 <b class="font-head">ใบขอราคา</b>
             </div>

@@ -18,6 +18,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('code')->unique();
             $table->integer('project_id');
             $table->integer('supplier_id');
+            $table->integer('branch_id');
             $table->date('po_date');
             $table->date('due_date');
             $table->string('address');

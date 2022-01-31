@@ -37,10 +37,10 @@
                                 </select>
                             </div>
                             <div class="col-12 col-md-2">
-                                <input readonly type="text" autocomplete="off" class="form-control form-control-sm" name="from" value="{{$from}}" id="from">
+                                <input  type="date" autocomplete="off" class="form-control form-control-sm" name="from" value="{{$from}}" id="from">
                             </div>
                             <div class="col-12 col-md-2">
-                                <input readonly type="text" autocomplete="off" class="form-control form-control-sm" name="to" value="{{$to}}" id="to">
+                                <input  type="date" autocomplete="off" class="form-control form-control-sm" name="to" value="{{$to}}" id="to">
                             </div>
 
                             <div class="col-12 col-md-1">
@@ -210,17 +210,6 @@
     $(document).ready(function() {
         bsCustomFileInput.init();
     });
-
-    //Date picker
-    $('#from').datepicker({
-        autoclose: true,
-        format: "yyyy-mm-dd",
-    })
-
-    $('#to').datepicker({
-        autoclose: true,
-        format: "yyyy-mm-dd",
-    })
 
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));

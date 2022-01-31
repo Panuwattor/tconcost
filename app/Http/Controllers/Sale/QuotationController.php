@@ -17,18 +17,17 @@ class QuotationController extends Controller
 {
     public function index()
     {
-        $quotations = Quotation::with('user', 'customer')->orderBy('created_at', 'desc')->get();
+        $quotations = Quotation::with('user', 'customer')->where('branch_id',auth()->user()->branch_id)->orderBy('created_at', 'desc')->get();
         return view('quotation.index', compact('quotations'));
     }
 
     public function create()
     {
-        $users = User::all();
-        $customers = Customer::whereIn('status',[ 'customer','customer , supplier'])->get();
+        $customers = Customer::whereIn('status',[ 'customer','customer , supplier'])->where('branch_id',auth()->user()->branch_id)->get();
         $projects = Project::with('main_user', 'customer')->orderBy('created_at', 'desc')->get();
         $branchs = Branch::where('status', 1)->get();
         $project_types = ProjectType::all();
-        return view('quotation.create', compact('customers', 'project_types', 'users', 'projects', 'branchs'));
+        return view('quotation.create', compact('customers', 'project_types', 'projects', 'branchs'));
     }
    
     public function store()
@@ -46,7 +45,8 @@ class QuotationController extends Controller
                 'note'=> request('customer_note'),
                 'status'=> request('customer_status'),
                 'txt_tin'=> request('customer_txt_tin'),
-                'email'=> request('customer_email')
+                'email'=> request('customer_email'),
+                'branch_id'=> auth()->user()->branch_id,
                ]);
                $customer_id = $customer->id;
             }
@@ -71,7 +71,7 @@ class QuotationController extends Controller
                 'user_id'=> auth()->user()->id,
                 'main_user_id'=> auth()->user()->id,
                 'status'=> 1,
-                'branch_id'=> request('branch_id'),
+                'branch_id'=> auth()->user()->branch_id,
             ]);
             foreach(request('dates') as $key => $date){
                 if(request('vat_type') == 'นอก'){
@@ -116,6 +116,10 @@ class QuotationController extends Controller
 
     public function show(Quotation $quotation)
     {
+        if($quotation->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         return view('quotation.show', compact('quotation'));
     }
 

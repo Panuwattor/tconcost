@@ -46,11 +46,7 @@ class WhtController extends Controller
         }     
 
         foreach($whts as $wht){
-            if($wht->payment && $branch_select && $wht->payment->project->branch_id == $branch_select){
-                array_push($data, $wht);
-            }else if(!$wht->payment && !$branch_select){
-                array_push($data, $wht);
-            }
+            array_push($data, $wht);
         }
 
         Collection::macro('toUpper', function () {
@@ -71,14 +67,9 @@ class WhtController extends Controller
     {
         $customers = Customer::get();
         $customer_select = request('customer_select') ? request('customer_select') : 'all';
-        $branchs = Branch::where('show_project', 1)->get();
         $branch_select = request('branch_select') ? request('branch_select') : '';
         
-        if($branch_select){
-            $branch = Branch::find($branch_select);
-        }else{
-            $branch = Branch::first();
-        }
+        $branch = auth()->user()->branch;
 
         $from = request('from') ? request('from') : Carbon::today()->format('Y-m-d');
         $to = request('to') ? request('to') : Carbon::today()->format('Y-m-d');
@@ -98,11 +89,7 @@ class WhtController extends Controller
         }     
 
         foreach($whts as $wht){
-            if($wht->payment && $branch_select && $wht->payment->project->branch_id == $branch_select){
-                array_push($data, $wht);
-            }else if(!$wht->payment && !$branch_select){
-                array_push($data, $wht);
-            }
+            array_push($data, $wht);
         }
 
         Collection::macro('toUpper', function () {
@@ -115,31 +102,31 @@ class WhtController extends Controller
         
         $data = $collection->toUpper();
 
-        return view('wht.print_report',compact('from','to','data','types', 'customers', 'customer_select', 'branchs', 'branch_select', 'branch'));
+        return view('wht.print_report',compact('from','to','data','types', 'customers', 'customer_select', 'branch_select', 'branch'));
     }
     
     public function index()
     {
-        $whts = Wht::whereIn('status', [0, 1])->get();
+        $whts = Wht::whereIn('status', [0, 1])->where('branch_id',auth()->user()->branch_id)->get();
         return view('wht.index', compact('whts'));
     }
     
     public function finish()
     {
-        $whts = Wht::where('status', 2)->get();
+        $whts = Wht::where('status', 2)->where('branch_id',auth()->user()->branch_id)->get();
         return view('wht.finish_index', compact('whts'));
     }
     
     public function reject()
     {
-        $whts = Wht::whereIn('status', [3,10])->get();
+        $whts = Wht::whereIn('status', [3,10])->where('branch_id',auth()->user()->branch_id)->get();
 
         return view('wht.reject_index', compact('whts'));
     }
 
     public function create()
     {
-        $suplliers = Customer::get();
+        $suplliers = Customer::where('branch_id',auth()->user()->branch_id)->get();
         $wht_groups = WhtGroup::all();
 
         return view('wht.create', compact('suplliers' , 'wht_groups'));
@@ -148,13 +135,14 @@ class WhtController extends Controller
     public function store()
     {
         $res = DB::transaction(function () {
-            $count = Wht::whereBetween('date', [Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-01') . ' 00:00:00', Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-t') . ' 23:59:59'])->count();
+            $count = Wht::where('branch_id',auth()->user()->branch_id)->whereBetween('date', [Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-01') . ' 00:00:00', Carbon::createFromFormat('Y-m-d', request('date'))->format('Y-m-t') . ' 23:59:59'])->count();
             $code = 'WT' . Carbon::createFromFormat('Y-m-d', request('date'))->format('Ym') . sprintf("%'03d", $count + 1);
 
             $request = request()->all();
             $request['user_id'] = auth()->user()->id;
             $request['code'] = $code;
-
+            $request['branch_id'] = auth()->user()->branch_id;
+            
             if (!request('wht_type')) {
                 alert()->error('ไม่สำเร็จ', 'ผิดพลาด');
                 return "ผิดพลาด";
@@ -226,8 +214,11 @@ class WhtController extends Controller
 
     public function show(Wht $wht)
     {   
-        $branchs = Branch::get();
-        return view('wht.show', compact('wht', 'branchs'));
+        if($wht->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
+        return view('wht.show', compact('wht'));
     }
 
     public function wht_group()
@@ -260,7 +251,16 @@ class WhtController extends Controller
 
     public function print(Wht $wht)
     {   
+        if($wht->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         $branch = request('brach_id') ? Branch::find(request('brach_id')) : null;
+
+        if($branch && $branch->id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด','ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/wht/group');
+        }
         return view('wht.print', compact('wht', 'branch'));
     }
 
@@ -279,7 +279,11 @@ class WhtController extends Controller
 
     public function edit(Wht $wht)
     {
-        $suplliers = Customer::get();
+        if($wht->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
+        $suplliers = Customer::where('branch_id',auth()->user()->branch_id)->get();
         $wht_groups = WhtGroup::all();
 
         return view('wht.edit', compact('suplliers', 'wht_groups', 'wht'));

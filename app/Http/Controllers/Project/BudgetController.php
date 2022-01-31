@@ -15,7 +15,13 @@ class BudgetController extends Controller
 
     public function index(Project $project)
     {
-        $costplans = CostPlan::all();
+
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
+
+        $costplans = CostPlan::where('branch_id',$project->branch_id)->get();
 
         $sumCostPlans = ProjectCostPlan::select('cost_plan_id', DB::raw('SUM(cost) as sum_cost,SUM(use_cost) as sum_use_cost'))
                                     ->groupBy('cost_plan_id')
@@ -29,23 +35,40 @@ class BudgetController extends Controller
             $bs[] = $sumCostPlan->sum_cost;
             $cs[] = $sumCostPlan->sum_use_cost;
         }
+
+        $as = json_encode($as);
+        $bs = json_encode($bs);
+        $cs = json_encode($cs);
+
         return view('project.budget.index', compact('project','costplans','as','bs','cs'));
     }
 
     public function edit(Project $project)
     {
-        $costplans = CostPlan::all();
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
+        $costplans = CostPlan::where('branch_id', $project->branch_id)->get();
         return view('project.budget.edit', compact('project', 'costplans'));
     }
     
     public function addcost(Project $project)
     {
-        $costplans = CostPlan::all();
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
+        $costplans = CostPlan::where('branch_id', $project->branch_id)->get();
         return view('project.budget.create', compact('project', 'costplans'));
     }
 
     public function addcost_store(Project $project)
     {
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         DB::transaction(function () use($project){
             $project->cost_plans()->delete();
             foreach(request('costs') as $key=>$cost){
@@ -74,7 +97,10 @@ class BudgetController extends Controller
 
     public function update(Project $project)
     {
-
+        if($project->branch_id != auth()->user()->branch_id){
+            alert()->error('ผิดพลาด', 'ไม่มีสิทธิ์เข้าถึง');
+            return redirect('/project');
+        }
         DB::transaction(function () use($project){
             foreach(request('costs') as $key=>$cost){
                 $cost_plan = ProjectCostPlan::find($key);

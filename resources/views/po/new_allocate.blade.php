@@ -145,8 +145,8 @@
                                 <table class="table table-hover table-sm">
                                     <tbody>
                                         <tr v-for="(item, item_index) in group_cost" @click="select_group_cost(item_index)" data-dismiss="modal" style="cursor: pointer;">
-                                            <td>@{{item.cost_plan.id}} : @{{item.cost_plan_name}}</td>
-                                            <td>@{{item.cost_plan.id}}.@{{item.cost_plan_list.id}} @{{item.costPlanLists}}</td>
+                                            <td>@{{item.cost_plan.count_cost}} : @{{item.cost_plan_name}}</td>
+                                            <td>@{{item.cost_plan_list.code}} @{{item.costPlanLists}}</td>
                                             <td>@{{item.note}}</td>
                                             <td>เหลือ @{{number(item.cost - item.use_cost)}} บาท</td>
                                         </tr>

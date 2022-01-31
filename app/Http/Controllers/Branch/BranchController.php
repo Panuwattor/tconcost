@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Brach;
+namespace App\Http\Controllers\Branch;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class BranchController extends Controller
 
         $branch = Branch::create(array_merge(request()->all()));
 
-        if (request('photo')) {
+        if (request('logo')) {
             $logo = Storage::disk('spaces')->putFile('tconcost/branch/'.$branch->id, request('logo'), 'public');
             $branch->update([
                 'logo' => $logo
@@ -34,7 +34,7 @@ class BranchController extends Controller
     public function update(Branch $branch)
     {
         if (request('logo')) {
-            Storage::disk('public')->delete($branch->logo);
+            Storage::disk('spaces')->delete($branch->logo);
             $logo = Storage::disk('spaces')->putFile('tconcost/branch/'.$branch->id, request('logo'), 'public');
         } else {
             $logo = $branch->logo;

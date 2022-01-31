@@ -26,11 +26,7 @@
                 <a href="/wht/edit/{{$wht->id}}"><button type="button" class="btn btn-outline-warning btn-sm"><i class="fa fa-edit"></i>แก้ไข</button></a>
                 @endif
                 <button type="submit" class="btn btn-outline-secondary btn-sm">พิมพ์</button>
-                <select name="brach_id" class="form-control form-control-sm">
-                    @foreach($branchs as $branch)
-                    <option value="{{$branch->id}}">{{$branch->name}}</option>
-                    @endforeach
-                </select>
+                <input type="hidden" value="{{auth()->user()->branch_id}}" name="brach_id">
             </form>
         </div>
     </div>

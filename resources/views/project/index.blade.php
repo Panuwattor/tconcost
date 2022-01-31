@@ -49,7 +49,7 @@
                                 @foreach($projects as $i => $project)
                                 <tr>
                                     <td>#{{$project->id}}</td>
-                                    <td>{{$project->customer->name}}</td>
+                                    <td>{{$project->customer ? $project->customer->name : ''}}</td>
                                     <td><a href="/project/show/{{$project->id}}">{{$project->code}} {{$project->name}}</a></td>
                                     <td class="text-right">{{number_format($project->project_cost, 2)}}</td>
                                     <td>{{$project->start_date}}</td>

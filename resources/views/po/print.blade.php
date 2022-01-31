@@ -192,7 +192,11 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 20%;">
-                    <img style="width: 90%;" src="{{ asset('/logo.jpg') }}" alt="User profile picture">
+                    @if($po->project->branch->logo)
+                    <img style="width: 90%;" src="{{Storage::disk('spaces')->url($po->project->branch->logo)}}" alt="User profile picture">
+                    @else
+                    <img style="width: 90%;" src="/home.jpg" alt="User profile picture">
+                    @endif
                 </td>
                 <td style="width: 50%;">
                     <span class="subsubject"> <b> {{$po->project->branch->company}}</b></span> <br>
@@ -354,11 +358,11 @@
             <tr>
                 <td style="width: 30%; text-align: center;">
                     <table style="width: 100%;">
-                        <span class="content_small">ผู้สั่งซื้อ/หัวหน้าแผนก (Purchase/Chife Division)</span>
+                        <span class="content_small">ผู้สั่งซื้อ (Purchase)</span>
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($po->user->signature) <img src="/storage/{{ $po->user->signature }}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
+                                    </br>
                                     </br>{{$po->user->name}}
                                     </br>วันที่/Date {{ \Carbon\Carbon::createFromFormat('Y-m-d', $po->po_date)->format('d/m/Y')}}
                                 </span>
@@ -372,8 +376,8 @@
                         @if($po->approve_user)
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($po->approve_user->signature) <img src="/storage/{{ $po->approve_user->signature }}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
+                                    </br>
                                     </br>{{$po->approve_user->name}}
                                     </br>วันที่/Date {{$po->approve_user_time->format('d/m/Y')}}
                                 </span>
@@ -398,8 +402,8 @@
                         @if($po->main_approve_user && $po->po_type != 'NR')
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($po->main_approve_user->signature) <img src="/storage/{{ $po->main_approve_user->signature }}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
+                                    </br>
                                     </br>{{$po->main_approve_user->name}}
                                     </br>วันที่/Date {{$po->main_approve_user_time->format('d/m/Y')}}
                                 </span>
@@ -408,7 +412,7 @@
                         @elseif($po->approve_user && $po->po_type == 'NR')
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($po->approve_user->signature) <img src="/storage/{{ $po->approve_user->signature }} " width="100px" height="40px">@endif
+                                @if($po->approve_user->signature) <img src="{{ Storage::disk('spaces')->url($po->approve_user->signature)}}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
                                     </br>{{$po->approve_user->name}}
                                     </br>วันที่/Date {{$po->approve_user_time->format('d/m/Y')}}

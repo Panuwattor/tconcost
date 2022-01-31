@@ -192,15 +192,15 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 20%;">
-                    <img style="width: 90%;" src="/storage/{{ $receive->project->branch->logo }}" alt="User profile picture">
+                    <img style="width: 90%;" src="{{ Storage::disk('spaces')->url($receive->branch->logo)}}" alt="User profile picture">
                 </td>
                 <td style="width: 50%;">
-                    <span class="subsubject"> <b> {{$receive->project->branch->company}}</b></span> <br>
-                    <small class="subsubject_en"> {{$receive->project->branch->company_eng}}</small>
+                    <span class="subsubject"> <b> {{$receive->branch->company}}</b></span> <br>
+                    <small class="subsubject_en"> {{$receive->branch->company_eng}}</small>
                     <hr style="margin-top: 5px ; margin-top: 5px">
-                    <small class="subsubject"> {{$receive->project->branch->address}}</small> <br>
-                    <small class="subsubject"> โทร : {{$receive->project->branch->tel}}</small> <br>
-                    <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receive->project->branch->tax}} ({{$receive->project->branch->tax_code}})</small> <br>
+                    <small class="subsubject"> {{$receive->branch->address}}</small> <br>
+                    <small class="subsubject"> โทร : {{$receive->branch->tel}}</small> <br>
+                    <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receive->branch->tax}} ({{$receive->branch->tax_code}})</small> <br>
                 </td>
                 <td style="width: 30%; text-align: right;">
                     <div id="example2">
@@ -362,7 +362,7 @@
                         <span class="content_small">Create by</span>
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($receive->user->signature) <img src="/storage/{{ $receive->user->signature }}" width="100px" height="40px">@endif
+                                @if($receive->user->signature) <img src="{{ Storage::disk('spaces')->url($receive->user->signature)}}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
                                     </br>{{$receive->user->name}}
                                     </br>วันที่/Date {{ \Carbon\Carbon::createFromFormat('Y-m-d', $receive->date)->format('d/m/Y')}}</span>
@@ -376,7 +376,7 @@
                         @if($receive->user_approve)
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                                @if($receive->user_approve->signature) <img src="/storage/{{ $receive->user_approve->signature }}" width="100px" height="40px">@endif
+                                @if($receive->user_approve->signature) <img src="{{ Storage::disk('spaces')->url($receive->user_approve->signature)}}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
                                     </br>{{$receive->user_approve->name}}
                                     </br>วันที่/Date @if($receive->approveDate){{ $receive->approveDate->format('d/m/Y') }}@endif</span>

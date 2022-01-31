@@ -5,12 +5,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">รายการรับของ</h1>
+                <h1 class="m-0 text-dark">{{$type == 'PAD' ? 'รายการเบิกงวดงาน' :'รายการรับของ'}}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active">รายการรับของ</li>
+                    <li class="breadcrumb-item active">{{$type == 'PAD' ? 'รายการเบิกงวดงาน' :'รายการรับของ'}}</li>
                 </ol>
             </div>
         </div>
@@ -84,6 +84,19 @@
                         </div>
                     </div>
                 </div>
+                @if($type == 'PAD')
+                <div class="col-md-4">
+                    <a href="/receive/select/PAD">
+                        <div class="info-box mb-3">
+                            <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-pie-chart"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">รอเบิกงวดงาน <span class="right badge badge-danger">{{$pos_sc->count()}}</span></span>
+                                <span class="info-box-number">Receive PO</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @else
                 <div class="col-md-4">
                     <a href="/receive/select/RR">
                         <div class="info-box mb-3">
@@ -95,6 +108,7 @@
                         </div>
                     </a>
                 </div>
+                @endif
             </div>
         </form>
     </div>
@@ -127,7 +141,7 @@
                     <td>{{$i +1}}</td>
                     <td>{!!$receive->receivestatus!!}</td>
                     <td><a href="/revice/show/{{$receive->id}}"> {{$receive->receive_code}}</a></td>
-                    <td><a target="_bank" href="/receive/po/show/{{$receive->po->id}}">{{$receive->po->code}}</a></td>
+                    <td><a target="_bank" href="/po/show/{{$receive->po->id}}">{{$receive->po->code}}</a></td>
                     <td> <a href="/project/show/{{$receive->project_id}}" target="back">{{$receive->project->name}}</a> </td>
                     <td>{{$receive->note}}</td>
                     <td>{{$receive->supplier->name}}</td>

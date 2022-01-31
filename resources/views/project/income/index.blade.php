@@ -175,17 +175,18 @@
                                     @foreach($project->invoices as $i => $invoice)
                                     <tr class="text-center">
                                         <td>
-                                            @if($invoice->status != 0)
-                                            <i class="fa fa-check-circle-o text-success "></i>
-                                            @else
+                                            @if($invoice->status == 0)
                                             <div class="form-group mb-0">
                                                 <div class="custom-control custom-checkbox">
                                                     <input class="custom-control-input" type="checkbox" id="select{{$i}}" name="invoices[]" value="{{$invoice->id}}">
                                                     <label for="select{{$i}}" class="custom-control-label"> {{$i + 1}} เลือก</label>
                                                 </div>
                                             </div>
+                                            @elseif($invoice->status == 99)
+                                            <i class="fa fa-times-circle-o text-danger "></i>
+                                            @else
+                                            <i class="fa fa-check-circle-o text-success "></i>
                                             @endif
-   
                                         </td>
                                         <td><a href="/project/invoice/show/{{$invoice->id}}"> {{$invoice->code}}</a></td>
                                         <td>{{$invoice->date}}</td>
@@ -226,9 +227,9 @@
                                 </thead>
                                 <tbody>
                                     @foreach($project->receiptArs as $i => $receipt_ar)
-                                    <tr>
+                                    <tr @if($receipt_ar->status == 99) bgcolor="#FFD9D9" @endif>
                                         <td class="text-center">{{$i + 1}}</td>
-                                        <td class="text-center"><a href="/receipt-ar/show/{{$receipt_ar->id}}">{{$receipt_ar->code}}</a></td>
+                                        <td class="text-left"><a href="/receipt-ar/show/{{$receipt_ar->id}}">{{$receipt_ar->code}}</a>@if($receipt_ar->status == 99) <small class="text-danger"> (ถูกยกเลิก)</small> @endif</td>
                                         <td class="text-center">{{$receipt_ar->date}}</td>
                                         <td class="text-right">{{number_format($receipt_ar->remain, 2)}}</td>
                                         <td class="text-right">{{number_format($receipt_ar->receipt_amount, 2)}}</td>

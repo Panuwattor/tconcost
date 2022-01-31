@@ -193,11 +193,6 @@
                 <div class="form-group">
                     <span>SPECIAL DISCOUNT : <span style="text-decoration: underline gray;">@{{numer(price.special_discount)}}</span></span>
                 </div>
-                @if($type == 'PAD')
-                <div class="form-group">
-                    <span>RETENTION : <input style="text-align: right;" type="text" value="0" v-model="retention" @change="cal_price"></span>
-                </div>
-                @endif
                 <div class="form-group">
                     <span>TAX BASE : <span style="text-decoration: underline gray;">@{{numer(price.sum_price)}}</span></span>
                 </div>
@@ -210,7 +205,7 @@
                     </span>
                 </div>
                 <div class="form-group">
-                    <span>TOTAL : <span style="text-decoration: underline gray;">@{{numer((price.sum - retention))}}</span></span>
+                    <span>TOTAL : <span style="text-decoration: underline gray;">@{{numer((price.sum))}}</span></span>
                 </div>
             </div>
         </div>
@@ -312,7 +307,6 @@
                 cut: 0,
                 file_names: new Array(),
                 files: new Array(),
-                retention: '{{$receive->retention ? $receive->retention->price : 0}}',
                 current_files: {!!$receive->receive_files!!},
             }
         },
@@ -478,11 +472,6 @@
                     return;
                 }
 
-                if(this.retention < 0){
-                    alert('กรอกข้อมูลให้ถูกต้อง ?');
-                    return;
-                }
-
                 if (confirm('ยืนยันการรับของ ?')) {
                     document.getElementById('btn_submit').style.display = 'none';
                     document.getElementById('btn_loading').style.display = 'block';
@@ -495,7 +484,6 @@
                         duedate: this.duedate,
                         price: this.price,
                         files: this.files,
-                        retention: this.retention,
                         current_files: this.current_files,
                         receive_id: '{{$receive->id}}',
                     });
@@ -505,7 +493,7 @@
                 }
 
                 history.replaceState({urlPath:'/receive/edit/' + '{{$receive->id}}' + '/' + this.type},"",'/')
-                location.href = '/receive';
+                location.href = '/receive/select/'+this.type;
             },
             onFileChange(e) {
                 this.file_names.push(e.target.files[0]);

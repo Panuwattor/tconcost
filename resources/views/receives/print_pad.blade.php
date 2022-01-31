@@ -193,15 +193,19 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 10%;">
-                    <img style="width: 90%;" src="https://mytcg.sgp1.digitaloceanspaces.com/{{$receive->project->branch->logo}}" alt="User profile picture">
+                    @if($receive->branch->logo)
+                    <img style="width: 90%;" src="{{Storage::disk('spaces')->url($receive->branch->logo)}}" alt="User profile picture">
+                    @else
+                    <img style="width: 90%;" src="/home.jpg" alt="User profile picture">
+                    @endif
                 </td>
                 <td style="width: 60%;">
-                    <span class="subsubject"> <b> {{$receive->project->branch->company}}</b></span>
-                    <small class="subsubject_en"> {{$receive->project->branch->company_eng}}</small>
+                    <span class="subsubject"> <b> {{$receive->branch->company}}</b></span>
+                    <small class="subsubject_en"> {{$receive->branch->company_eng}}</small>
                     <hr style="margin-top: 5px ; margin-top: 5px">
-                    <small class="subsubject"> {{$receive->project->branch->address}}</small>
-                    <small class="subsubject"> โทร : {{$receive->project->branch->tel}}</small> <br>
-                    <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receive->project->branch->tax}} ({{$receive->project->branch->tax_code}})</small> <br>
+                    <small class="subsubject"> {{$receive->branch->address}}</small>
+                    <small class="subsubject"> โทร : {{$receive->branch->tel}}</small> <br>
+                    <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receive->branch->tax}} ({{$receive->branch->tax_code}})</small> <br>
                 </td>
                 <td style="width: 30%; text-align: right;">
                     <div id="example2">
@@ -407,8 +411,8 @@
                         <tr class="card-solid">
                              <th style="padding-top: 10px; padding: 10px;" class="text-center">
                                  <span class="content_small">ผู้จัดทำ</span></br>
-                                @if($receive->user->signature) <img src="{{ Storage::disk('spaces')->url($receive->user->signature) }}" width="100px" height="40px">@endif
                                 <span class="foot_contents">
+                                </br>
                                     </br>{{$receive->user->name}}
                                     </br>วันที่/Date {{ \Carbon\Carbon::createFromFormat('Y-m-d', $receive->date)->format('d/m/Y')}}</span>
                             </th>

@@ -177,15 +177,19 @@
         <table style="width: 100%;">
             <tr>
             <td style="width: 20%;">
-                    <img style="width: 90%;" src="{{ asset('/logo.jpg') }}" alt="User profile picture">
+                    @if($receipt->branch->logo)
+                    <img style="width: 90%;" src="{{Storage::disk('spaces')->url($receipt->branch->logo)}}" alt="User profile picture">
+                    @else
+                    <img style="width: 90%;" src="/home.jpg" alt="User profile picture">
+                    @endif
                 </td>
                 <td style="width: 50%;">
-                <span class="subsubject"> <b> {{$receipt->project->branch->company}}</b></span> <br>
-                <small class="subsubject_en">  {{$receipt->project->branch->company_eng}}</small>
+                <span class="subsubject"> <b> {{$receipt->branch->company}}</b></span> <br>
+                <small class="subsubject_en">  {{$receipt->branch->company_eng}}</small>
                 <hr style="margin-top: 5px ; margin-top: 5px">
-                <small class="subsubject"> {{$receipt->project->branch->address}}</small> <br>
-                <small class="subsubject"> โทร : {{$receipt->project->branch->tel}}</small> <br>
-                <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receipt->project->branch->tax}} ({{$receipt->project->branch->tax_code}})</small> <br>
+                <small class="subsubject"> {{$receipt->branch->address}}</small> <br>
+                <small class="subsubject"> โทร : {{$receipt->branch->tel}}</small> <br>
+                <small class="subsubject">เลขประจำตัวผู้เสียภาษี : {{$receipt->branch->tax}} ({{$receipt->branch->tax_code}})</small> <br>
                 </td>
                 <td style="width: 30%; text-align: right;">
                      <div id="example2">
@@ -338,7 +342,7 @@
                 <table style="width: 100%;">
                         <tr class="card-solid">
                             <th style="padding-top: 10px; padding: 10px;" class="text-center">
-                            @if($receipt->user->signature) <img src="/storage/{{$receipt->user->signature }}" width="100px" height="40px">@endif
+                            @if($receipt->user->signature) <img src="{{ Storage::disk('spaces')->url($receipt->user->signature)}}" width="100px" height="40px">@endif
                             <span class="foot_contents">
                             </br>({{$receipt->user->name}})
                             </br>ผู้รับเงิน</span>

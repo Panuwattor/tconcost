@@ -40,9 +40,9 @@
                         </div>
                     </div>
                     <div class="card direct-chat direct-chat-primary collapsed-card">
-                        <div class="card-header ui-sortable-handle" style="cursor: move;">
+                        <div class="card-header ui-sortable-handle">
                             <div class="form-group row">
-                             <label class="col-sm-4 col-form-label"> <a href="/customer/create">ผู้ขาย</a> <span class="text-danger"><b>*</b></span></label>
+                             <label class="col-sm-4 col-form-label"> ผู้ขาย<span class="text-danger"><b>*</b></span></label>
                                 <div class="col-sm-6">
                                     <div class="input-group">
                                         <select name="new_customer_id" class="form-control select2" id="supplier_id">
@@ -164,8 +164,8 @@
                         <div class="col-sm-8">
                             <select required class="form-control form-control-sm select2" name="main_user_id" id="main_user_id">
                                 <option value="">เลือก</option>
-                                @foreach($main_users as $main_user)
-                                <option value="{{$main_user->id}}" @if(auth()->user()->id == $main_user->id) selected @endif>{{$main_user->name}}</option>
+                                @foreach($main_users as $to_branch)
+                                <option value="{{$to_branch->user->id}}" @if(auth()->user()->id == $to_branch->user->id) selected @endif>{{$to_branch->user->name}}</option>
                                 @endforeach
                             </select>
                         </div>

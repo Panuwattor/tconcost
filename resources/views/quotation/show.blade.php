@@ -56,7 +56,7 @@
                                 <span for="inputEmail3">ลูกค้า : <strong style="color:#0E710A;">{{$quotation->customer->name}}</strong></span>
                             </div>
                             <div class="form-group">
-                                <span for="inputEmail3">ประเภทโครงการ : <strong style="color:#0E710A;">{{$quotation->project_type->name}}</strong></span>
+                                <span for="inputEmail3">ประเภทโครงการ : <strong style="color:#0E710A;">{{$quotation->project_type ? $quotation->project_type->name : ''}}</strong></span>
                             </div>
                             <div class="form-group">
                                 <span for="inputEmail3">มูลค่าสัญญา (ไม่รวม VAT) : <strong style="color:#0E710A;">{{number_format($quotation->project_cost, 2)}}</strong></span>

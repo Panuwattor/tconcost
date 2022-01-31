@@ -31,13 +31,15 @@
                     <h3 class="card-title">รายการสั่งซื้อ</h3>
                     <div class="card-tools">
                         @include('po.allocate_detail')
+                        @if($po->status == 0)
                         <button type="submit" class="btn btn-outline-info btn-sm w-auto">จัดสรรต้นทุน</button>
+                        @endif
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-nowrap">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-nowrap p-0">
                             <thead>
                                 <tr class="text-center">
                                     <th>ลำดับ</th>
@@ -52,7 +54,7 @@
                                     @if($po->status == 0)
                                     <th> 
                                         <label>
-                                            <input type="checkbox"  name="css_all_check" id="css_all_check"> 
+                                        <input type="checkbox" name="css_all_check" id="css_all_check" />
                                             จัดสรรต้นทุน
                                          </label>
                                     </th>
@@ -87,14 +89,12 @@
                                     @if($po->status == 0)
                                     <td>
                                         @if(!$list->allocate)
-                                        <div class="form-group clearfix">
-                                            <div class="icheck-primary d-inline">
-                                                <input type="checkbox" name="po_lists_id[]" value="{{$list->id}}" id="checkboxPrimary{{$i}}" class="allcheck">
+                                            <div class="d-inline">
+                                                <input type="checkbox" name="po_lists_id[]" value="{{$list->id}}" id="checkboxPrimary{{$i}}" class="css_data_item">
                                                 <label for="checkboxPrimary{{$i}}">
                                                     เลือก
                                                 </label>
                                             </div>
-                                        </div>
                                         @else
 
                                         @if($po->status != 2)
@@ -141,11 +141,11 @@
                                             @foreach($po->poFiles as $no => $pofile)
                                                 <div class="tab-pane fade" id="custom-content-below-home-{{$no}}" role="tabpanel" aria-labelledby="custom-content-below-home-{{$no}}-tab">
                                                 @if(collect(explode('.', $pofile->file))[1] == 'jpeg' || collect(explode('.', $pofile->file))[1] == 'png' || collect(explode('.', $pofile->file))[1] == 'jpg')
-                                                <a target="bank" href="/storage/{{ $pofile->file }}"><img class="img-fluid pad" src="/storage/{{ $pofile->file }}" alt="Photo"></a>
+                                                <a target="bank" href="{{ Storage::disk('spaces')->url($pofile->file)}}"><img class="img-fluid pad" src="{{ Storage::disk('spaces')->url($pofile->file)}}" alt="Photo"></a>
                                                 @elseif(collect(explode('.', $pofile->file))[1] == 'pdf')
-                                                <iframe class="text-right" src="/storage/{{ $pofile->file }}" height="400px" width="100%"></iframe>
+                                                <iframe class="text-right" src="{{ Storage::disk('spaces')->url($pofile->file)}}" height="400px" width="100%"></iframe>
                                                 @else
-                                                <a target="bank" href="/storage/{{ $pofile->file }}">
+                                                <a target="bank" href="{{ Storage::disk('spaces')->url($pofile->file)}}">
                                                 <div class="info-box m-3 bg-success">
                                                     <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
 
@@ -331,4 +331,17 @@
         document.getElementById("mySidenav").style.width = "0";
     }
 </script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>    
+<script type="text/javascript">  
+$(function(){        
+      $("#css_all_check").click(function(){ // เมื่อคลิกที่ checkbox ตัวควบคุม
+          if($(this).prop("checked")){ // ตรวจสอบค่า ว่ามีการคลิกเลือก
+              $(".css_data_item").prop("checked",true); // กำหนดให้ เลือก checkbox ที่ต้องการ ที่มี class ตามกำหนด 
+          }else{ // ถ้าไม่มีการ ยกเลิกการเลือก
+              $(".css_data_item").prop("checked",false); // กำหนดให้ ยกเลิกการเลือก checkbox ที่ต้องการ ที่มี class ตามกำหนด 
+          }
+      });      
+});  
+</script> 
 @endsection

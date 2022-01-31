@@ -36,7 +36,6 @@
                     <th>ประเภท</th>
                     <th>หัก ณ ที่จ่าย</th>
                     <th>เวลาที่สร้าง</th>
-                    <th>สถานะ</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,7 +48,6 @@
                     <td>{{$wht->type}}</td>
                     <td>{{$wht->wht_payment_type}}</td>
                     <td>{{$wht->created_at}}</td>
-                    <td>{!!$wht->state!!}</td>
                 </tr>
                 @endforeach
             </tbody>

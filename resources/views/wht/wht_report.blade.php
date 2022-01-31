@@ -42,14 +42,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 col-md-4">
-                            <select name="branch_select" class="form-control form-control-sm select2">
-                                <option value="">ยังไม่ได้นำไปหัก</option>
-                                @foreach($branchs as $branch)
-                                <option value="{{$branch->id}}" @if($branch->id == $branch_select) selected @endif>{{$branch->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="icheck-primary d-inline ml-3">
                             <input type="checkbox" name="types[]" value="ภ.ง.ด53" id="checkboxPrimary1" @if(in_array("ภ.ง.ด53", $types)) checked="" @endif>
                             <label for="checkboxPrimary1">
@@ -85,7 +77,6 @@
             <thead>
                 <tr class="text-center" style="background-color:#8AADCC">
                     <th>รหัส/วันที่จ่าย</th>
-                    <th>Payment</th>
                     <th>ผู้ถูกหัก ณ ที่จ่าย</th>
                     <th>TAX ID</th>
                     <th>ที่อยู่</th>
@@ -111,17 +102,6 @@
                 @foreach($row_group as $i => $row)
                 <tr>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;"><a target="_bank" href="/wht/show/{{$row->id}}">{{$row->code}}</a></td>
-                    <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;">
-                        @if($row->payment)
-                        @if($row->pay_type == 'MainPayment')
-                        <a href="/pm/show/{{$row->payment->id}}" target="_bank">{{$row->payment->code}}</a>
-                        @else
-                        <a href="/pv/show/{{$row->payment->id}}" target="_bank">{{$row->payment->code}}</a>
-                        @endif
-                        @else
-                        -
-                        @endif
-                    </td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;">{{$row->supplier->name}}</td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;">{{$row->tax_id}}</td>
                     <td rowspan="{{$row->wht_lists->count()}}" style="vertical-align: middle;">{{$row->address}}</td>
@@ -151,7 +131,7 @@
                 @endforeach
 
                 <tr style="background-color:#ddd">
-                    <th colspan="7" class="text-center">รวม {{$row->date}}</th>
+                    <th colspan="6" class="text-center">รวม {{$row->date}}</th>
                     <th colspan="" class="text-center">{{number_format($_am, 2)}}</th>
                     <th class="text-center">{{number_format($_tax, 2)}}</th>
                 </tr>
@@ -163,7 +143,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="7" class="text-center">รวมทั้งสิ้น</th>
+                    <th colspan="6" class="text-center">รวมทั้งสิ้น</th>
                     <th class="text-center">{{number_format(($_amount), 2)}}</th>
                     <th class="text-center">{{number_format(($_wht_tax), 2)}}</th>
                 </tr>

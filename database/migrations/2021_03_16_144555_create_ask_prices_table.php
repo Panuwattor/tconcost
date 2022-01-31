@@ -26,6 +26,7 @@ class CreateAskPricesTable extends Migration
             $table->string('photo')->nullable();
             $table->string('note')->nullable();
             $table->integer('user_id');
+            $table->integer('branch_id');
             $table->integer('status')->default(0)->nullable();
             $table->timestamps();
         });

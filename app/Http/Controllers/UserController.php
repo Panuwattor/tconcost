@@ -30,8 +30,8 @@ class UserController extends Controller
     public function photo(User $user)
     {
         if (request('photo')) {
-            Storage::disk('public')->delete($user->photo);
-            $file = request('photo')->store('user', 'public');
+            Storage::disk('spaces')->delete($user->photo);
+            $file = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('photo'), 'public');
         } else {
             $file = $user->photo;
         }
@@ -72,15 +72,15 @@ class UserController extends Controller
     public function update(User $user)
     {
         if (request('photo')) {
-            Storage::disk('public')->delete($user->photo);
-            $file = request('photo')->store('user', 'public');
+            Storage::disk('spaces')->delete($user->photo);
+            $file = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('photo'), 'public');
         } else {
             $file = $user->photo;
         }
 
         if (request('signature')) {
-            Storage::disk('public')->delete($user->signature);
-            $signature = request('signature')->store('user', 'public');
+            Storage::disk('spaces')->delete($user->signature);
+            $file = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('signature'), 'public');
         } else {
             $signature = $user->signature;
         }
@@ -126,21 +126,27 @@ class UserController extends Controller
     public function store()
     {
 
+        $password = Hash::make(request('password'));
+
+        $user = User::create(array_merge(request()->all()));
+
         if (request('photo')) {
-            $file = request('photo')->store('user', 'public');
+            $file = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('photo'), 'public');
         } else {
             $file = Null;
         }
 
         if (request('signature')) {
-            $signature = request('signature')->store('user', 'public');
+            $signature = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('signature'), 'public');
         } else {
             $signature = Null;
         }
 
-        $password = Hash::make(request('password'));
-
-        $user = User::create(array_merge(request()->all(), ['password' => $password, 'photo' => $file, 'signature' => $signature]));
+        $user->update([
+            'password' => $password,
+            'photo' => $file,
+            'signature' => $signature
+        ]);
 
         if (request('roles')) {
             foreach (request('roles') as $requestrole) {
@@ -185,8 +191,8 @@ class UserController extends Controller
         }
   
         if (request('photo')) {
-            Storage::disk('public')->delete($user->photo);
-            $photo = request('photo')->store('user', 'public');
+            Storage::disk('spaces')->delete($user->photo);
+            $signature = Storage::disk('spaces')->putFile('tconcost/user/'.$user->id, request('photo'), 'public');
         } else {
             $photo = $user->photo;
         }

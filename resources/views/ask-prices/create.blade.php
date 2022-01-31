@@ -27,7 +27,7 @@
         <div class="card-body row">
             <div class="col-12 col-md-6">
                 <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Order <span class="text-danger"><b>*</b></span></label>
+                    <label class="col-sm-2 col-form-label">โครงการ <span class="text-danger"><b>*</b></span></label>
                     <div class="col-sm-10">
                         <select required class="form-control select2" name="project_id" id="project_id" onchange="setAddress()">
                             <option value="">เลือก</option>
@@ -42,8 +42,8 @@
                     <div class="col-sm-10">
                         <select required class="form-control select2" name="main_user_id" id="main_user_id">
                             <option value="">เลือก</option>
-                            @foreach($main_users as $main_user)
-                            <option value="{{$main_user->id}}">{{$main_user->name}}</option>
+                            @foreach($main_users as $to_branch)
+                            <option value="{{$to_branch->user->id}}">{{$to_branch->user->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -57,13 +57,13 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">วันที่ขอซื้อ <span class="text-danger"><b>*</b></span></label>
                     <div class="col-sm-10">
-                        <input required autocomplete="off" type="text" name="ap_date" class="form-control" id="ap_date" value="{{Carbon\Carbon::today()->format('Y-m-d')}}">
+                        <input required autocomplete="off" type="date" name="ap_date" class="form-control" id="ap_date" value="{{Carbon\Carbon::today()->format('Y-m-d')}}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">วันที่หมดอายุ <span class="text-danger"><b>*</b></span></label>
                     <div class="col-sm-10">
-                        <input required autocomplete="off" type="text" name="finish_date" class="form-control" id="finish_date" value="{{Carbon\Carbon::today()->format('Y-m-d')}}">
+                        <input required autocomplete="off" type="date" name="finish_date" class="form-control" id="finish_date" value="{{Carbon\Carbon::today()->format('Y-m-d')}}">
                     </div>
                 </div>
             </div>
@@ -158,7 +158,7 @@
                         <tr v-for="(item1, index1) in arr1">
                             <td>@{{index1 + 1}}</td>
                             <td>
-                                <select required class="form-control" name="supplier_id[]">
+                                <select required :class="'form-control select2 selectx'+index1" name="supplier_id[]">
                                     <option value="">เลือก</option>
                                     @foreach($suppliers as $supplier)
                                     <option value="{{$supplier->id}}">{{$supplier->name}}</option>
@@ -194,7 +194,7 @@
 <link rel="stylesheet" href="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/select2/css/select2.min.css">
 <link rel="stylesheet" href="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
-<link rel="stylesheet" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 <style>
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: #444;
@@ -214,8 +214,7 @@
 @endsection
 
 @section('footer')
-<script src="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 <!-- vue cdn -->
@@ -261,16 +260,6 @@
                 arr1: new Array(),
             }
         },
-        mounted() {
-            $('#ap_date').datepicker({
-                autoclose: true,
-                format: "yyyy-mm-dd",
-            })
-            $('#finish_date').datepicker({
-                autoclose: true,
-                format: "yyyy-mm-dd",
-            })
-        },
         created() {
             this.arr.push({
                 name: '',
@@ -291,18 +280,19 @@
                     amount: '',
                     unit: ''
                 });
-                //Initialize Select2 Elements
-                $('.select2').select2({width: '100%'})
             },
             remove(id) {
                 this.arr.splice(id, 1);
             },
-            add1() {
-                this.arr1.push({
+            add1: async function() {
+                
+               await this.arr1.push({
                     name: '',
                     amount: '',
                     unit: ''
                 });
+                console.log((this.arr1.length-1));
+                $('.selectx'+(this.arr1.length-1)).select2({width: '100%'})
             },
             remove1(id) {
                 this.arr1.splice(id, 1);

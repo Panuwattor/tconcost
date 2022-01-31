@@ -7,7 +7,7 @@ use DB;
 
 class PurchaseOrder extends Model
 {
-    protected $fillable = ['code','project_id', 'supplier_id', 'po_date', 'due_date', 'address', 'tel', 'main_user_id', 'payment_type', 'cradit', 'total_price', 'special_discount', 'sum_price', 'vat_type', 'vat_amount', 'patment_condition', 'note', 'status', 'user_id', 'approve_user_id', 'reject_note', 'po_type', 'contract_id', 'approve_user_time', 'main_approve_user_id', 'main_approve_user_time','bank_account_id', 'receive_special_discount','notify'];
+    protected $fillable = ['code','project_id','branch_id', 'supplier_id', 'po_date', 'due_date', 'address', 'tel', 'main_user_id', 'payment_type', 'cradit', 'total_price', 'special_discount', 'sum_price', 'vat_type', 'vat_amount', 'patment_condition', 'note', 'status', 'user_id', 'approve_user_id', 'reject_note', 'po_type', 'contract_id', 'approve_user_time', 'main_approve_user_id', 'main_approve_user_time','bank_account_id', 'receive_special_discount','notify'];
 
     
     function approve_user()

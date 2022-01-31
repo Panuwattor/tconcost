@@ -30,27 +30,16 @@
         @foreach($costplans as $i => $costplan)
           <div class="col-md-12">
             <div class="card collapsed-card">
-              <div class="card-header">
-                <h5 class="card-title">
-                    @if($i == 0 )
-                    <i class="fa fa-cart-plus fa-2x text-success"></i> 
-                    @elseif($i == 1)
-                    <i class="fa fa-child fa-2x text-info"></i> 
-                    @elseif($i == 2)
-                    <i class="fa fa-wrench fa-2x text-primary"></i> 
-                    @elseif($i == 3)
-                    <i class="fa fa-drupal fa-2x text-warning"></i> 
-                    @else
-                    <i class="fa fa-shopping-bag fa-2x text-danger"></i> 
-                    @endif
-                {{$i + 1}} . {{$costplan->name}} <small>@if($costplan->note)({{$costplan->note}})@endif</small></h5>
-
-                <div class="card-tools">
+            <a href="#" class="btn btn-tool" data-card-widget="collapse">
+              <div class="card-header m-2">
+              <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse">
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
+                <h5 class="text-primary"> <i class="fa fa-cogs"></i>  {{$i + 1}} . {{$costplan->name}} <small>@if($costplan->note)({{$costplan->note}})@endif</small></h5>
               </div>
+              </a>
               <!-- /.card-header -->
               <div class="card-body" style="display: none;">
               <div class="card-body p-0">
@@ -71,7 +60,7 @@
                       <td>
                          <input class="form-control rounded-0 border-0 shadow-none placeholder-Desription ng-untouched ng-pristine ng-valid ng-star-inserted" value="{{$cost_plan->note}}" name="descriptions[{{$cost_plan->id}}]" type="text" placeholder=" เพิ่มรายละเอียดรหัสต้นทุน ">
                       </td>
-                      <td><input class="form-control rounded-0 text-right border-0 shadow-none inputNum" value="{{$cost_plan->cost}}" name="costs[{{$cost_plan->id}}]" type="text" placeholder="0.00"></td>
+                      <td><input class="form-control rounded-0 text-right border-0 shadow-none inputNum" value="{{$cost_plan->cost}}" name="costs[{{$cost_plan->id}}]" type="number" step="any" placeholder="0.00"></td>
                     </tr>
                     @endforeach
                   </tbody>

@@ -164,7 +164,11 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 20%;">
-                    <img style="width: 90%;" src="{{ asset('/logo.jpg') }}" alt="User profile picture">
+                    @if($invoice->project->branch->logo)
+                    <img style="width: 90%;" src="{{Storage::disk('spaces')->url($invoice->project->branch->logo)}}" alt="User profile picture">
+                    @else
+                    <img style="width: 90%;" src="/home.jpg" alt="User profile picture">
+                    @endif
                 </td>
                 <td style="width: 50%;">
                 <span class="subsubject"> <b> {{$invoice->project->branch->company}}</b></span> <br>

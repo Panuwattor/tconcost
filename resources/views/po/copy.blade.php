@@ -43,7 +43,7 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label"> <a href="/customer/create">ผู้ขาย</a>  <span class="text-danger"><b>*</b></span></label>
                         <div class="col-sm-8">
-                            <select required class="form-control form-control-sm select2" name="supplier_id" id="supplier_id">
+                            <select required class="form-control form-control-sm select2" name="new_customer_id" id="new_customer_id">
                                 <option value="">เลือก</option>
                                 @foreach($suppliers as $supplier)
                                 <option value="{{$supplier->id}}" @if($supplier->id == $po->supplier_id) selected @endif>{{$supplier->name}}</option>
@@ -95,7 +95,7 @@
                             <select required class="form-control form-control-sm select2" name="main_user_id" id="main_user_id">
                                 <option value="">เลือก</option>
                                 @foreach($main_users as $main_user)
-                                <option value="{{$main_user->id}}" <?php if($main_user->id == $po->main_user_id){ print('selected'); } ?>>{{$main_user->name}}</option>
+                                <option value="{{$main_user->user->id}}" <?php if($main_user->user->id == $po->main_user_id){ print('selected'); } ?>>{{$main_user->user->name}}</option>
                                 @endforeach
                             </select>
                         </div>

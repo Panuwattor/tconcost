@@ -22,7 +22,7 @@
         <div class="col-md-12 col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">รายการโครงการ</h3>
+                    <h3 class="card-title">ใส่รายละเอียด ใบเสนอราคา</h3>
                     <div class="card-tools">
                     </div>
                 </div>
@@ -47,21 +47,11 @@
                                         <input required type="text" class="form-control" name="name" placeholder="ชื่อ" autocomplete="off">
                                     </div>
                                 </div>
-                                <div class="form-group" hidden>
-                                    <span for="inputEmail3">สาขา <span class="text-danger">*</span></span>
-                                    <div>
-                                        <select required name="branch_id" class="form-control select2" id="">
-                                            @foreach($branchs as $branch)
-                                            <option value="{{$branch->id}}">{{$branch->code}} {{$branch->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
 
                                 <div class="form-group" hidden>
                                     <span for="inputEmail3">ประเภทโครงการ <span class="text-danger">*</span></span>
                                     <div>
-                                        <select required name="project_type_id" class="form-control select2" id="">
+                                        <select required name="project_type_id" class="form-control" id="">
                                             @foreach($project_types as $project_type)
                                             <option value="{{$project_type->id}}">{{$project_type->name}}</option>
                                             @endforeach
@@ -109,16 +99,6 @@
                             </div>
 
                             <div class="col-12 col-md-6">
-                                <div class="form-group" hidden>
-                                    <span for="inputEmail3">ผู้รับผิดชอบโครงการ <span class="text-danger">*</span></span>
-                                    <div>
-                                        <select required name="main_user_id" class="form-control select2" id="">
-                                            @foreach($users as $user)
-                                            <option value="{{$user->id}}" @if($user->id == auth()->user()->id) selected @endif>{{$user->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="card direct-chat direct-chat-primary collapsed-card">
                                     <div class="card-header ui-sortable-handle" style="cursor: move;">
                                         <div class="form-group">
@@ -255,6 +235,20 @@
 @section('header')
 <link rel="stylesheet" href="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/select2/css/select2.min.css">
+
+  <style>
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 38px !important;
+        padding-top: 8px !important;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+</style>
 @endsection
 
 @section('footer')
@@ -305,5 +299,14 @@
             }
         });
     });
+</script>
+
+@section('footer')
+<script src="https://taweechai-bucket.s3-ap-southeast-1.amazonaws.com/upvc/admin/plugins/select2/js/select2.full.min.js"></script>
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+  })
 </script>
 @endsection
